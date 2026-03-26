@@ -1,0 +1,9 @@
+{
+  "apps": [
+    {
+      "name": "Bico",
+      "path": "ios",
+      "framework": "swift"
+    }
+  ]
+}
