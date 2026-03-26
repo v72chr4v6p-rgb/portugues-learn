@@ -3,6 +3,7 @@ import SwiftUI
 struct QuizView: View {
     @State private var viewModel: QuizViewModel
     @Environment(ProgressService.self) private var progressService
+    @Environment(EngagementService.self) private var engagementService
     @Environment(\.dismiss) private var dismiss
 
     init(level: Level, dialect: Dialect, pronouns: Set<Pronoun>, gameMode: GameMode, useTimer: Bool) {
@@ -310,6 +311,8 @@ struct QuizView: View {
             verb: viewModel.currentVerb?.infinitive ?? "",
             correct: viewModel.isCorrect == true
         )
+        let xpAmount = viewModel.isCorrect == true ? 10 : 2
+        engagementService.awardXP(xpAmount, source: "quiz")
     }
 
     private var resultBanner: some View {
@@ -353,9 +356,36 @@ struct QuizView: View {
                 in: .rect(cornerRadius: 16)
             )
 
+            if viewModel.isCorrect == false && !viewModel.feedbackExplanation.isEmpty {
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "lightbulb.fill")
+                            .font(.caption)
+                            .foregroundStyle(Theme.amber)
+                        Text("Why?")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(Theme.amber)
+                    }
+                    Text(viewModel.feedbackExplanation)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineSpacing(2)
+                    if !viewModel.feedbackExample.isEmpty {
+                        Text(viewModel.feedbackExample)
+                            .font(.caption.italic())
+                            .foregroundStyle(.tertiary)
+                    }
+                }
+                .padding(12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Theme.amber.opacity(0.06), in: .rect(cornerRadius: 12))
+                .padding(.horizontal, 4)
+            }
+
             Button {
                 if viewModel.questionsAnswered >= viewModel.totalQuestions {
                     progressService.completeLevel(viewModel.level.level, score: viewModel.score)
+                    engagementService.recordSession()
                 }
                 viewModel.nextQuestion()
             } label: {

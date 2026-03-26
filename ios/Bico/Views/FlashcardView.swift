@@ -4,6 +4,7 @@ struct FlashcardView: View {
     let dialect: Dialect
     @Environment(VerbDataService.self) private var verbDataService
     @Environment(ProgressService.self) private var progressService
+    @Environment(SpeechService.self) private var speechService
     @State private var viewModel: FlashcardViewModel?
 
     var body: some View {
@@ -175,7 +176,7 @@ struct FlashcardView: View {
             }
 
             Button {
-                vm.speak(card.verb.infinitive)
+                speechService.speak(card.verb.infinitive, dialect: vm.dialect)
             } label: {
                 HStack(spacing: 6) {
                     Image(systemName: "speaker.wave.2.fill")
@@ -211,7 +212,7 @@ struct FlashcardView: View {
                     .foregroundStyle(Theme.tangerine)
                 Spacer()
                 Button {
-                    vm.speak(card.verb.infinitive)
+                    speechService.speak(card.verb.infinitive, dialect: vm.dialect)
                 } label: {
                     Image(systemName: "speaker.wave.2.fill")
                         .font(.subheadline)
@@ -239,7 +240,7 @@ struct FlashcardView: View {
                         Spacer()
 
                         Button {
-                            vm.speak(value)
+                            speechService.speak(value, dialect: vm.dialect)
                         } label: {
                             Image(systemName: "speaker.wave.1.fill")
                                 .font(.caption)

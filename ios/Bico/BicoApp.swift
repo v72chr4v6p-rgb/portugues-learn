@@ -4,6 +4,8 @@ import SwiftUI
 struct BicoApp: App {
     @State private var verbDataService = VerbDataService()
     @State private var progressService = ProgressService()
+    @State private var engagementService = EngagementService()
+    @State private var speechService = SpeechService()
     @AppStorage("selectedDialect") private var dialectRaw: String = ""
 
     var body: some Scene {
@@ -12,6 +14,8 @@ struct BicoApp: App {
                 MainTabView(dialect: dialect)
                     .environment(verbDataService)
                     .environment(progressService)
+                    .environment(engagementService)
+                    .environment(speechService)
                     .tint(Theme.tangerine)
             } else {
                 OnboardingView(onDialectSelected: { dialect in

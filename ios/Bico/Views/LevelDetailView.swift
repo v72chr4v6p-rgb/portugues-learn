@@ -1,14 +1,14 @@
 import SwiftUI
-import AVFoundation
 
 struct LevelDetailView: View {
     let level: Level
     let dialect: Dialect
     @Environment(VerbDataService.self) private var verbDataService
     @Environment(ProgressService.self) private var progressService
+    @Environment(SpeechService.self) private var speechService
+    @Environment(EngagementService.self) private var engagementService
     @State private var selectedLessonIndex: Int?
     @State private var quizConfig: QuizConfig?
-    private let synthesizer = AVSpeechSynthesizer()
 
     private var lessons: [LessonPage] {
         LessonContentService.lessons(for: level, dialect: dialect)
@@ -142,7 +142,7 @@ struct LevelDetailView: View {
                                 }
                                 Spacer()
                                 Button {
-                                    speak(verb.infinitive)
+                                    speechService.speak(verb.infinitive, dialect: dialect)
                                 } label: {
                                     Image(systemName: "speaker.wave.2.fill")
                                         .font(.subheadline)
@@ -176,7 +176,7 @@ struct LevelDetailView: View {
                                             .font(.caption.weight(.semibold))
                                         Spacer()
                                         Button {
-                                            speak(value)
+                                            speechService.speak(value, dialect: dialect)
                                         } label: {
                                             Image(systemName: "speaker.wave.1.fill")
                                                 .font(.system(size: 10))
@@ -290,12 +290,10 @@ struct LevelDetailView: View {
                                     Circle()
                                         .strokeBorder(Theme.sage.opacity(0.3), lineWidth: 2)
                                 }
-
                             Image(systemName: "pencil.line")
                                 .font(.title2)
                                 .foregroundStyle(Theme.sage)
                         }
-
                         Text("All Pronouns")
                             .font(.caption.weight(.medium))
                             .foregroundStyle(.primary)
@@ -329,12 +327,10 @@ struct LevelDetailView: View {
                                 lineWidth: 2
                             )
                     }
-
                 Text(pronoun.shortName.prefix(2))
                     .font(.title3.weight(.bold))
                     .foregroundStyle(Theme.tangerine)
             }
-
             Text(pronoun.displayName)
                 .font(.caption.weight(.medium))
                 .foregroundStyle(.primary)
@@ -401,13 +397,6 @@ struct LevelDetailView: View {
             useTimer: false
         )
         quizConfig = config
-    }
-
-    private func speak(_ text: String) {
-        let utterance = AVSpeechUtterance(string: text)
-        utterance.voice = AVSpeechSynthesisVoice(language: dialect == .brazilian ? "pt-BR" : "pt-PT")
-        utterance.rate = 0.4
-        synthesizer.speak(utterance)
     }
 
     private var levelDescription: String {

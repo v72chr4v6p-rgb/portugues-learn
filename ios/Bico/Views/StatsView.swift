@@ -2,6 +2,7 @@ import SwiftUI
 
 struct StatsView: View {
     @Environment(ProgressService.self) private var progressService
+    @Environment(EngagementService.self) private var engagementService
 
     var body: some View {
         NavigationStack {
@@ -22,8 +23,8 @@ struct StatsView: View {
         LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
             StatCard(icon: "checkmark.circle.fill", iconColor: .green, value: "\(progressService.completedLevelCount)", label: "Levels Done", total: "/ 43")
             StatCard(icon: "percent", iconColor: Theme.tangerine, value: progressService.totalAttempts > 0 ? "\(Int(progressService.accuracy * 100))%" : "—", label: "Accuracy", total: nil)
-            StatCard(icon: "flame.fill", iconColor: .orange, value: "\(progressService.currentStreak)", label: "Current Streak", total: nil)
-            StatCard(icon: "star.fill", iconColor: Theme.gold, value: "\(progressService.totalCorrect)", label: "Total Correct", total: nil)
+            StatCard(icon: "flame.fill", iconColor: .orange, value: "\(engagementService.dayStreak)", label: "Day Streak", total: nil)
+            StatCard(icon: "star.fill", iconColor: Theme.gold, value: "\(engagementService.xp)", label: "Total XP", total: nil)
         }
     }
 
@@ -37,7 +38,7 @@ struct StatsView: View {
                     Text("Best Streak")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
-                    Text("\(progressService.bestStreak) correct in a row")
+                    Text("\(engagementService.bestDayStreak) days in a row")
                         .font(.title3.weight(.bold))
                 }
 

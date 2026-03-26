@@ -38,6 +38,10 @@ enum Theme {
     static let deepTeal = Color(red: 0.16, green: 0.36, blue: 0.32)
     static let mistyGreen = Color(red: 0.82, green: 0.88, blue: 0.78)
 
+    static let coral = Color(red: 1.0, green: 0.38, blue: 0.35)
+    static let sky = Color(red: 0.35, green: 0.68, blue: 0.95)
+    static let lavender = Color(red: 0.65, green: 0.55, blue: 0.85)
+
     static let portugueseChars: [String] = ["á", "é", "í", "ó", "ú", "â", "ê", "ô", "ã", "õ", "ç"]
 
     static let tangerineGradient = LinearGradient(
@@ -58,4 +62,60 @@ enum Theme {
         startRadius: 10,
         endRadius: 60
     )
+
+    static let premiumDark = LinearGradient(
+        stops: [
+            .init(color: Color(red: 0.08, green: 0.06, blue: 0.12), location: 0),
+            .init(color: Color(red: 0.05, green: 0.08, blue: 0.06), location: 0.5),
+            .init(color: Color(red: 0.04, green: 0.04, blue: 0.08), location: 1)
+        ],
+        startPoint: .top,
+        endPoint: .bottom
+    )
+
+    static let premiumLight = LinearGradient(
+        stops: [
+            .init(color: warmIvory, location: 0),
+            .init(color: sandLight, location: 0.35),
+            .init(color: Color(red: 0.94, green: 0.95, blue: 0.91), location: 0.65),
+            .init(color: warmIvory, location: 1)
+        ],
+        startPoint: .top,
+        endPoint: .bottom
+    )
+}
+
+struct PremiumCard: ViewModifier {
+    @Environment(\.colorScheme) private var colorScheme
+
+    func body(content: Content) -> some View {
+        content
+            .padding(16)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(colorScheme == .dark
+                          ? Color(.secondarySystemBackground)
+                          : Color.white)
+                    .shadow(color: .black.opacity(colorScheme == .dark ? 0.3 : 0.06), radius: 12, y: 4)
+            )
+    }
+}
+
+struct GlowButton: ViewModifier {
+    let color: Color
+
+    func body(content: Content) -> some View {
+        content
+            .shadow(color: color.opacity(0.35), radius: 12, y: 6)
+    }
+}
+
+extension View {
+    func premiumCard() -> some View {
+        modifier(PremiumCard())
+    }
+
+    func glowButton(color: Color = Theme.tangerine) -> some View {
+        modifier(GlowButton(color: color))
+    }
 }

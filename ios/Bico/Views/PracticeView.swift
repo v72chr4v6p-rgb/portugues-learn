@@ -4,6 +4,8 @@ struct PracticeView: View {
     let dialect: Dialect
     @Environment(VerbDataService.self) private var verbDataService
     @Environment(ProgressService.self) private var progressService
+    @Environment(EngagementService.self) private var engagementService
+    @Environment(SpeechService.self) private var speechService
     @State private var viewModel: PracticeViewModel?
 
     var body: some View {
@@ -149,6 +151,7 @@ struct PracticeView: View {
                     withAnimation(.spring(response: 0.4)) {
                         vm.startSession()
                     }
+                    engagementService.recordSession()
                     HapticService.heavyTap()
                 } label: {
                     HStack(spacing: 8) {
@@ -247,7 +250,7 @@ struct PracticeView: View {
                         .foregroundStyle(.tertiary)
 
                     Button {
-                        vm.speak(item.verb.infinitive)
+                        speechService.speak(item.verb.infinitive, dialect: dialect)
                     } label: {
                         Image(systemName: "speaker.wave.2.fill")
                             .font(.body)
@@ -287,6 +290,7 @@ struct PracticeView: View {
                 .onSubmit {
                     if !vm.showingResult && !vm.userAnswer.isEmpty {
                         vm.submitAnswer()
+                        awardPracticeXP(vm: vm)
                     }
                 }
 
@@ -312,6 +316,7 @@ struct PracticeView: View {
             if !vm.showingResult {
                 Button {
                     vm.submitAnswer()
+                    awardPracticeXP(vm: vm)
                 } label: {
                     Text("Check")
                         .font(.headline)
@@ -336,6 +341,7 @@ struct PracticeView: View {
             ForEach(vm.multipleChoiceOptions, id: \.self) { option in
                 Button {
                     vm.selectOption(option)
+                    awardPracticeXP(vm: vm)
                 } label: {
                     HStack {
                         Text(option)
@@ -377,6 +383,11 @@ struct PracticeView: View {
         return .secondary
     }
 
+    private func awardPracticeXP(vm: PracticeViewModel) {
+        let amount = vm.isCorrect == true ? 10 : 2
+        engagementService.awardXP(amount, source: "practice")
+    }
+
     private func resultFeedback(vm: PracticeViewModel) -> some View {
         VStack(spacing: 12) {
             HStack(spacing: 12) {
@@ -402,7 +413,7 @@ struct PracticeView: View {
                 Spacer()
 
                 Button {
-                    vm.speak(vm.correctAnswer)
+                    speechService.speak(vm.correctAnswer, dialect: dialect)
                 } label: {
                     Image(systemName: "speaker.wave.2.fill")
                         .font(.title3)

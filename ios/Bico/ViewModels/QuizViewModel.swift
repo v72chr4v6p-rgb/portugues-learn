@@ -23,6 +23,8 @@ class QuizViewModel {
     var timeRemaining: Int = 30
     var multipleChoiceOptions: [String] = []
     var shakeCount: Double = 0
+    var feedbackExplanation: String = ""
+    var feedbackExample: String = ""
 
     private var quizItems: [(Verb, Pronoun)] = []
     private var timerTask: Task<Void, Never>?
@@ -65,6 +67,8 @@ class QuizViewModel {
         isCorrect = nil
         showingResult = false
         correctAnswer = verb.conjugation(for: pronoun, dialect: dialect) ?? ""
+        feedbackExplanation = ""
+        feedbackExample = ""
 
         if gameMode == .speedTap {
             generateMultipleChoiceOptions()
@@ -115,8 +119,33 @@ class QuizViewModel {
             withAnimation(.spring(response: 0.2, dampingFraction: 0.2)) {
                 shakeCount += 1
             }
+            buildFeedback()
         }
         timerTask?.cancel()
+    }
+
+    private func buildFeedback() {
+        guard let verb = currentVerb else { return }
+        let exampleSet = VerbExampleData.examples(for: verb.infinitive)
+
+        if !exampleSet.commonMistake.isEmpty {
+            feedbackExplanation = exampleSet.mistakeExplanation
+        } else if verb.irregular {
+            feedbackExplanation = "\(verb.infinitive) is irregular — the \(currentPronoun.displayName) form must be memorized."
+        } else {
+            let inf = verb.infinitive.lowercased()
+            if inf.hasSuffix("ar") {
+                feedbackExplanation = "Regular -AR verb. Remove -ar, add the \(level.tense) ending for \(currentPronoun.displayName)."
+            } else if inf.hasSuffix("er") {
+                feedbackExplanation = "Regular -ER verb. Remove -er, add the \(level.tense) ending for \(currentPronoun.displayName)."
+            } else {
+                feedbackExplanation = "Regular -IR verb. Remove -ir, add the \(level.tense) ending for \(currentPronoun.displayName)."
+            }
+        }
+
+        if let example = exampleSet.examples.first {
+            feedbackExample = "\(example.portuguese) — \(example.english)"
+        }
     }
 
     func selectMultipleChoice(_ answer: String) {

@@ -8,24 +8,24 @@ struct MainTabView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            Tab("Jungle", systemImage: "tree.fill", value: 0) {
+            Tab("Home", systemImage: "house.fill", value: 0) {
+                HomeView(dialect: dialect)
+            }
+
+            Tab("Path", systemImage: "map.fill", value: 1) {
                 ForestPathView(dialect: dialect)
             }
 
-            Tab("Practice", systemImage: "brain.head.profile.fill", value: 1) {
+            Tab("Verbs", systemImage: "textformat.abc", value: 2) {
+                VerbExplorerView(dialect: dialect)
+            }
+
+            Tab("Practice", systemImage: "brain.head.profile.fill", value: 3) {
                 PracticeView(dialect: dialect)
             }
 
-            Tab("Flashcards", systemImage: "rectangle.stack.fill", value: 2) {
-                FlashcardView(dialect: dialect)
-            }
-
-            Tab("Stats", systemImage: "chart.bar.fill", value: 3) {
-                StatsView()
-            }
-
-            Tab("Glossary", systemImage: "book.fill", value: 4) {
-                GlossaryView(dialect: dialect)
+            Tab("Settings", systemImage: "gearshape.fill", value: 4) {
+                SettingsView()
             }
         }
         .tint(Theme.tangerine)
