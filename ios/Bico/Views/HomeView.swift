@@ -9,6 +9,7 @@ struct HomeView: View {
     @State private var navigateToLevel: Level?
     @State private var showQuickReview: Bool = false
     @State private var animateStreak: Bool = false
+    @State private var growthRingAppeared: Bool = false
 
     private var currentLevel: Level? {
         verbDataService.allSortedLevels().first { !progressService.isLevelCompleted($0.level) }
@@ -32,26 +33,44 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 24) {
-                    greetingHeader
-                    dailyProgressCard
-                    streakAndXPRow
-                    if let level = currentLevel {
-                        continueCard(level: level)
+                VStack(spacing: 0) {
+                    botanicalHeader
+                    
+                    VStack(spacing: Pico.spacingL) {
+                        growthRingWidget
+                        streakAndXPRow
+
+                        if let level = currentLevel {
+                            continueCard(level: level)
+                        }
+
+                        learningPathCards
+                        quickActionsRow
+
+                        if !recentlyPracticed.isEmpty {
+                            reviewSection
+                        }
+
+                        todaysTip
                     }
-                    quickActionsRow
-                    if !recentlyPracticed.isEmpty {
-                        reviewSection
-                    }
-                    todaysTip
+                    .padding(.horizontal, Pico.spacingXL)
+                    .padding(.top, Pico.spacingL)
+                    .padding(.bottom, 120)
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
-                .padding(.bottom, 100)
             }
-            .background(Color(.systemGroupedBackground))
-            .navigationTitle("Bico")
-            .navigationBarTitleDisplayMode(.large)
+            .background(Pico.plaster.ignoresSafeArea())
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("Pico")
+                        .font(.system(.headline, design: .serif, weight: .bold))
+                        .tracking(-0.5)
+                        .foregroundStyle(Pico.deepForestGreen)
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    levelBadge
+                }
+            }
             .navigationDestination(item: $navigateToLevel) { level in
                 LevelDetailView(level: level, dialect: dialect)
             }
@@ -61,105 +80,159 @@ struct HomeView: View {
                         .toolbar {
                             ToolbarItem(placement: .topBarLeading) {
                                 Button("Done") { showQuickReview = false }
-                                    .foregroundStyle(Theme.tangerine)
+                                    .foregroundStyle(Pico.deepForestGreen)
                             }
                         }
                 }
             }
             .onAppear {
-                withAnimation(.spring(response: 0.6).delay(0.3)) {
+                withAnimation(.spring(response: 0.8, dampingFraction: 0.7).delay(0.3)) {
                     animateStreak = true
+                    growthRingAppeared = true
                 }
             }
         }
     }
 
-    private var greetingHeader: some View {
-        HStack(spacing: 14) {
-            AsyncImage(url: URL(string: Theme.bicoMascotURL)) { phase in
-                if let image = phase.image {
-                    image.resizable().aspectRatio(contentMode: .fit)
-                } else {
-                    Image(systemName: "bird.fill")
-                        .font(.title)
-                        .foregroundStyle(Theme.tangerine)
+    // MARK: - Botanical Header
+
+    private var botanicalHeader: some View {
+        ZStack(alignment: .bottomLeading) {
+            Color(red: 0.92, green: 0.91, blue: 0.88)
+                .frame(height: 220)
+                .overlay {
+                    AsyncImage(url: URL(string: Pico.monsteraHeaderURL)) { phase in
+                        if let image = phase.image {
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                        }
+                    }
+                    .allowsHitTesting(false)
+                }
+                .clipped()
+
+            LinearGradient(
+                stops: [
+                    .init(color: Color.clear, location: 0.3),
+                    .init(color: Pico.plaster.opacity(0.6), location: 0.7),
+                    .init(color: Pico.plaster, location: 1.0)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(height: 220)
+            .allowsHitTesting(false)
+
+            HStack(alignment: .bottom, spacing: 14) {
+                AsyncImage(url: URL(string: Pico.bicoMascotURL)) { phase in
+                    if let image = phase.image {
+                        image.resizable().aspectRatio(contentMode: .fit)
+                    } else {
+                        Image(systemName: "bird.fill")
+                            .font(.title)
+                            .foregroundStyle(Pico.deepForestGreen)
+                    }
+                }
+                .frame(width: 48, height: 48)
+                .offset(x: 4)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(greetingText)
+                        .font(.system(.largeTitle, design: .serif, weight: .bold))
+                        .tracking(-0.5)
+                        .foregroundStyle(Pico.deepForestGreen)
+                    Text(motivationalText)
+                        .font(.system(.subheadline, design: .rounded))
+                        .foregroundStyle(Pico.deepForestGreen.opacity(0.6))
                 }
             }
-            .frame(width: 52, height: 52)
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(greetingText)
-                    .font(.title2.weight(.bold))
-                Text(motivationalText)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
-            Spacer()
-
-            levelBadge
+            .padding(.horizontal, Pico.spacingXL)
+            .padding(.bottom, Pico.spacingM)
         }
-        .padding(.top, 8)
     }
+
+    // MARK: - Level Badge
 
     private var levelBadge: some View {
-        VStack(spacing: 2) {
+        ZStack {
+            Circle()
+                .stroke(Pico.leafGreen.opacity(0.2), lineWidth: 3)
+                .frame(width: 36, height: 36)
+            Circle()
+                .trim(from: 0, to: engagementService.levelProgress)
+                .stroke(Pico.leafGreen, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+                .frame(width: 36, height: 36)
+                .rotationEffect(.degrees(-90))
+            Text("\(engagementService.userLevel)")
+                .font(.system(.caption, design: .rounded, weight: .heavy))
+                .foregroundStyle(Pico.deepForestGreen)
+        }
+    }
+
+    // MARK: - Growth Ring Widget
+
+    private var growthRingWidget: some View {
+        HStack(spacing: 20) {
             ZStack {
                 Circle()
-                    .stroke(Theme.tangerine.opacity(0.2), lineWidth: 3)
-                    .frame(width: 44, height: 44)
+                    .stroke(Pico.leafGreen.opacity(0.12), lineWidth: 10)
+                    .frame(width: 80, height: 80)
+
                 Circle()
-                    .trim(from: 0, to: engagementService.levelProgress)
-                    .stroke(Theme.tangerine, style: StrokeStyle(lineWidth: 3, lineCap: .round))
-                    .frame(width: 44, height: 44)
+                    .trim(from: 0, to: growthRingAppeared ? engagementService.dailyProgress : 0)
+                    .stroke(
+                        Pico.leafGreen,
+                        style: StrokeStyle(lineWidth: 10, lineCap: .round)
+                    )
+                    .frame(width: 80, height: 80)
                     .rotationEffect(.degrees(-90))
-                Text("\(engagementService.userLevel)")
-                    .font(.system(.body, design: .rounded, weight: .heavy))
-                    .foregroundStyle(Theme.tangerine)
-            }
-            Text("Level")
-                .font(.caption2.weight(.medium))
-                .foregroundStyle(.secondary)
-        }
-    }
+                    .animation(.spring(response: 1.0, dampingFraction: 0.7), value: growthRingAppeared)
 
-    private var dailyProgressCard: some View {
-        VStack(spacing: 16) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Daily Goal")
-                        .font(.headline)
-                    Text("\(engagementService.todayXP) / \(engagementService.dailyXPGoal) XP")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                VStack(spacing: 0) {
+                    if engagementService.dailyGoalMet {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundStyle(Pico.leafGreen)
+                            .symbolEffect(.bounce, value: animateStreak)
+                    } else {
+                        Text("\(Int(engagementService.dailyProgress * 100))")
+                            .font(.system(.title3, design: .rounded, weight: .heavy))
+                            .foregroundStyle(Pico.deepForestGreen)
+                        Text("%")
+                            .font(.system(.caption2, design: .rounded, weight: .semibold))
+                            .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
+                    }
                 }
-                Spacer()
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Daily Goal")
+                    .font(.system(.headline, design: .serif, weight: .bold))
+                    .tracking(-0.3)
+                    .foregroundStyle(Pico.deepForestGreen)
+
+                Text("\(engagementService.todayXP) / \(engagementService.dailyXPGoal) XP")
+                    .font(.system(.subheadline, design: .rounded, weight: .medium))
+                    .foregroundStyle(Pico.deepForestGreen.opacity(0.6))
+
                 if engagementService.dailyGoalMet {
-                    Image(systemName: "checkmark.seal.fill")
-                        .font(.title2)
-                        .foregroundStyle(.green)
-                        .symbolEffect(.bounce, value: animateStreak)
+                    HStack(spacing: 4) {
+                        Image(systemName: "leaf.fill")
+                            .font(.caption2)
+                        Text("Goal reached!")
+                            .font(.system(.caption, design: .rounded, weight: .semibold))
+                    }
+                    .foregroundStyle(Pico.leafGreen)
                 }
             }
 
-            GeometryReader { geo in
-                ZStack(alignment: .leading) {
-                    Capsule()
-                        .fill(Color(.systemGray5))
-                    Capsule()
-                        .fill(
-                            engagementService.dailyGoalMet
-                            ? AnyShapeStyle(Theme.successGradient)
-                            : AnyShapeStyle(Theme.tangerineGradient)
-                        )
-                        .frame(width: max(8, geo.size.width * engagementService.dailyProgress))
-                        .animation(.spring(response: 0.6), value: engagementService.dailyProgress)
-                }
-            }
-            .frame(height: 10)
-            .clipShape(Capsule())
+            Spacer()
         }
-        .premiumCard()
+        .picoCard()
     }
+
+    // MARK: - Streak & XP
 
     private var streakAndXPRow: some View {
         HStack(spacing: 12) {
@@ -170,31 +243,35 @@ struct HomeView: View {
                     .symbolEffect(.bounce, value: animateStreak)
                 VStack(alignment: .leading, spacing: 2) {
                     Text("\(engagementService.dayStreak)")
-                        .font(.title3.weight(.bold).monospacedDigit())
+                        .font(.system(.title3, design: .rounded, weight: .bold).monospacedDigit())
+                        .foregroundStyle(Pico.deepForestGreen)
                     Text("Day Streak")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(.system(.caption, design: .rounded))
+                        .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
                 }
                 Spacer()
             }
-            .premiumCard()
+            .picoCard()
 
             HStack(spacing: 10) {
                 Image(systemName: "star.fill")
                     .font(.title2)
-                    .foregroundStyle(Theme.gold)
+                    .foregroundStyle(Pico.gold)
                 VStack(alignment: .leading, spacing: 2) {
                     Text("\(engagementService.xp)")
-                        .font(.title3.weight(.bold).monospacedDigit())
+                        .font(.system(.title3, design: .rounded, weight: .bold).monospacedDigit())
+                        .foregroundStyle(Pico.deepForestGreen)
                     Text("Total XP")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(.system(.caption, design: .rounded))
+                        .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
                 }
                 Spacer()
             }
-            .premiumCard()
+            .picoCard()
         }
     }
+
+    // MARK: - Continue Card
 
     private func continueCard(level: Level) -> some View {
         Button {
@@ -204,42 +281,173 @@ struct HomeView: View {
             HStack(spacing: 16) {
                 ZStack {
                     Circle()
-                        .fill(Theme.tangerine.opacity(0.15))
+                        .fill(Pico.deepForestGreen.opacity(0.1))
                         .frame(width: 56, height: 56)
-                    Text("\(level.level)")
-                        .font(.system(.title2, design: .rounded, weight: .heavy))
-                        .foregroundStyle(Theme.tangerine)
+                    Image(systemName: "play.fill")
+                        .font(.system(size: 20))
+                        .foregroundStyle(Pico.deepForestGreen)
                 }
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Continue Learning")
-                        .font(.headline)
+                        .font(.system(.headline, design: .serif, weight: .bold))
+                        .tracking(-0.3)
+                        .foregroundStyle(Pico.deepForestGreen)
                     Text("Level \(level.level) — \(level.tense)")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(.system(.subheadline, design: .rounded))
+                        .foregroundStyle(Pico.deepForestGreen.opacity(0.6))
                     Text("\(level.verbs.count) verbs to master")
-                        .font(.caption)
-                        .foregroundStyle(.tertiary)
+                        .font(.system(.caption, design: .rounded))
+                        .foregroundStyle(Pico.deepForestGreen.opacity(0.4))
                 }
 
                 Spacer()
 
-                Image(systemName: "play.circle.fill")
-                    .font(.system(size: 36))
-                    .foregroundStyle(Theme.tangerine)
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Pico.deepForestGreen.opacity(0.4))
             }
-            .premiumCard()
+            .picoCard()
         }
         .buttonStyle(.plain)
         .sensoryFeedback(.selection, trigger: navigateToLevel)
     }
+
+    // MARK: - Learning Path Cards
+
+    private var learningPathCards: some View {
+        VStack(spacing: 14) {
+            Text("Explore")
+                .font(.system(.title3, design: .serif, weight: .bold))
+                .tracking(-0.3)
+                .foregroundStyle(Pico.deepForestGreen)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            pathCard(
+                title: "O Vocabulário",
+                subtitle: "Words & conjugations",
+                icon: "textformat.abc",
+                textureURL: Pico.leafVeinTextureURL,
+                tint: Pico.leafGreen
+            )
+
+            pathCard(
+                title: "A Conversa",
+                subtitle: "Practice & drills",
+                icon: "bubble.left.and.bubble.right.fill",
+                textureURL: Pico.stoneArchTextureURL,
+                tint: Pico.deepForestGreen
+            )
+
+            culturalCard
+        }
+    }
+
+    private func pathCard(title: String, subtitle: String, icon: String, textureURL: String, tint: Color) -> some View {
+        Button {
+            HapticService.lightTap()
+        } label: {
+            HStack(spacing: 0) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Image(systemName: icon)
+                        .font(.title2)
+                        .foregroundStyle(tint)
+                    Spacer()
+                    Text(title)
+                        .font(.system(.title3, design: .serif, weight: .bold))
+                        .tracking(-0.3)
+                        .foregroundStyle(Pico.deepForestGreen)
+                    Text(subtitle)
+                        .font(.system(.caption, design: .rounded))
+                        .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
+                }
+                .padding(20)
+
+                Spacer()
+
+                Color.clear
+                    .frame(width: 100)
+                    .overlay {
+                        AsyncImage(url: URL(string: textureURL)) { phase in
+                            if let image = phase.image {
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .opacity(0.3)
+                            }
+                        }
+                        .allowsHitTesting(false)
+                    }
+                    .clipped()
+            }
+            .frame(height: 120)
+            .background(
+                RoundedRectangle(cornerRadius: Pico.cardRadius, style: .continuous)
+                    .fill(Pico.cardSurface)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: Pico.cardRadius, style: .continuous)
+                            .strokeBorder(Pico.cardLightStroke, lineWidth: 1)
+                    )
+            )
+            .clipShape(.rect(cornerRadius: Pico.cardRadius, style: .continuous))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var culturalCard: some View {
+        Button {
+            HapticService.lightTap()
+        } label: {
+            HStack(spacing: 0) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Image(systemName: "globe.americas.fill")
+                        .font(.title2)
+                        .foregroundStyle(Pico.terracotta)
+                    Spacer()
+                    Text("Cultura")
+                        .font(.system(.title3, design: .serif, weight: .bold))
+                        .tracking(-0.3)
+                        .foregroundStyle(Pico.deepForestGreen)
+                    Text("Brazilian culture & tips")
+                        .font(.system(.caption, design: .rounded))
+                        .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
+                }
+                .padding(20)
+
+                Spacer()
+
+                ZStack {
+                    Circle()
+                        .fill(Pico.terracotta.opacity(0.08))
+                        .frame(width: 80, height: 80)
+                    Image(systemName: "sun.max.fill")
+                        .font(.system(size: 32))
+                        .foregroundStyle(Pico.terracotta.opacity(0.25))
+                }
+                .padding(.trailing, 20)
+            }
+            .frame(height: 120)
+            .background(
+                RoundedRectangle(cornerRadius: Pico.cardRadius, style: .continuous)
+                    .fill(Pico.cardSurface)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: Pico.cardRadius, style: .continuous)
+                            .strokeBorder(Pico.cardLightStroke, lineWidth: 1)
+                    )
+            )
+            .clipShape(.rect(cornerRadius: Pico.cardRadius, style: .continuous))
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Quick Actions
 
     private var quickActionsRow: some View {
         HStack(spacing: 12) {
             quickActionButton(
                 icon: "bolt.fill",
                 title: "3-min Review",
-                color: Theme.amber
+                color: Pico.amber
             ) {
                 showQuickReview = true
                 HapticService.lightTap()
@@ -248,7 +456,7 @@ struct HomeView: View {
             quickActionButton(
                 icon: "rectangle.stack.fill",
                 title: "Flashcards",
-                color: Theme.softTeal
+                color: Pico.softTeal
             ) {
                 HapticService.lightTap()
             }
@@ -262,20 +470,31 @@ struct HomeView: View {
                     .font(.title2)
                     .foregroundStyle(color)
                 Text(title)
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.primary)
+                    .font(.system(.caption, design: .rounded, weight: .semibold))
+                    .foregroundStyle(Pico.deepForestGreen)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 20)
-            .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: 16))
+            .background(
+                RoundedRectangle(cornerRadius: Pico.cardRadius, style: .continuous)
+                    .fill(Pico.cardSurface)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: Pico.cardRadius, style: .continuous)
+                            .strokeBorder(Pico.cardLightStroke, lineWidth: 1)
+                    )
+            )
         }
         .buttonStyle(.plain)
     }
 
+    // MARK: - Review Section
+
     private var reviewSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Recently Practiced")
-                .font(.headline)
+                .font(.system(.headline, design: .serif, weight: .bold))
+                .tracking(-0.3)
+                .foregroundStyle(Pico.deepForestGreen)
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
@@ -287,23 +506,32 @@ struct HomeView: View {
                                 HStack(spacing: 6) {
                                     Image(systemName: level.zone.icon)
                                         .font(.caption)
-                                        .foregroundStyle(Theme.leafGreen)
+                                        .foregroundStyle(Pico.leafGreen)
                                     Text("Lvl \(level.level)")
-                                        .font(.caption.weight(.bold).monospacedDigit())
+                                        .font(.system(.caption, design: .rounded, weight: .bold).monospacedDigit())
+                                        .foregroundStyle(Pico.deepForestGreen)
                                 }
                                 Text(level.tense)
-                                    .font(.subheadline.weight(.semibold))
+                                    .font(.system(.subheadline, design: .rounded, weight: .semibold))
+                                    .foregroundStyle(Pico.deepForestGreen)
                                     .lineLimit(1)
 
                                 let prog = progressService.progress(for: level.level)
                                 let acc = prog.totalAttempts > 0 ? Int(Double(prog.correctAttempts) / Double(prog.totalAttempts) * 100) : 0
                                 Text("\(acc)% accuracy")
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary)
+                                    .font(.system(.caption2, design: .rounded))
+                                    .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
                             }
-                            .padding(12)
+                            .padding(14)
                             .frame(width: 140)
-                            .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: 14))
+                            .background(
+                                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                                    .fill(Pico.cardSurface)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 20, style: .continuous)
+                                            .strokeBorder(Pico.cardLightStroke, lineWidth: 1)
+                                    )
+                            )
                         }
                         .buttonStyle(.plain)
                     }
@@ -313,29 +541,34 @@ struct HomeView: View {
         }
     }
 
+    // MARK: - Tip
+
     private var todaysTip: some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: "lightbulb.fill")
                 .font(.title3)
-                .foregroundStyle(Theme.amber)
+                .foregroundStyle(Pico.amber)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text("Tip of the Day")
-                    .font(.subheadline.weight(.semibold))
+                    .font(.system(.subheadline, design: .serif, weight: .semibold))
+                    .foregroundStyle(Pico.deepForestGreen)
                 Text(dailyTip)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(.system(.caption, design: .rounded))
+                    .foregroundStyle(Pico.deepForestGreen.opacity(0.6))
                     .lineSpacing(2)
             }
         }
-        .premiumCard()
+        .picoCard()
     }
+
+    // MARK: - Helpers
 
     private var greetingText: String {
         let hour = Calendar.current.component(.hour, from: Date())
-        if hour < 12 { return "Bom dia!" }
-        if hour < 18 { return "Boa tarde!" }
-        return "Boa noite!"
+        if hour < 12 { return "Bom dia" }
+        if hour < 18 { return "Boa tarde" }
+        return "Boa noite"
     }
 
     private var motivationalText: String {

@@ -28,6 +28,6 @@ struct MainTabView: View {
                 SettingsView()
             }
         }
-        .tint(Theme.tangerine)
+        .tint(Pico.deepForestGreen)
     }
 }

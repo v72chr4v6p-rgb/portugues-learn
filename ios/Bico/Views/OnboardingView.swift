@@ -8,17 +8,8 @@ struct OnboardingView: View {
 
     var body: some View {
         ZStack {
-            LinearGradient(
-                stops: [
-                    .init(color: Color(red: 0.02, green: 0.08, blue: 0.04), location: 0),
-                    .init(color: Theme.jungleCanopy.opacity(0.6), location: 0.3),
-                    .init(color: Theme.deepForest, location: 0.6),
-                    .init(color: Color(red: 0.03, green: 0.06, blue: 0.03), location: 1)
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            Pico.plaster
+                .ignoresSafeArea()
 
             VStack(spacing: 0) {
                 Spacer()
@@ -30,16 +21,16 @@ struct OnboardingView: View {
                     .padding(.bottom, 36)
 
                 dialectCards
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 32)
+                    .padding(.horizontal, Pico.spacingXL)
+                    .padding(.bottom, Pico.spacingXL)
 
                 continueButton
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 16)
+                    .padding(.horizontal, Pico.spacingXL)
+                    .padding(.bottom, Pico.spacingM)
 
                 Text("You can change this later in Settings")
-                    .font(.caption)
-                    .foregroundStyle(.white.opacity(0.4))
+                    .font(.system(.caption, design: .rounded))
+                    .foregroundStyle(Pico.deepForestGreen.opacity(0.4))
                     .padding(.bottom, 40)
 
                 Spacer()
@@ -60,7 +51,7 @@ struct OnboardingView: View {
             Circle()
                 .fill(
                     RadialGradient(
-                        colors: [Theme.tropicalGreen.opacity(0.15), Color.clear],
+                        colors: [Pico.leafGreen.opacity(0.1), Color.clear],
                         center: .center,
                         startRadius: 20,
                         endRadius: 80
@@ -68,7 +59,7 @@ struct OnboardingView: View {
                 )
                 .frame(width: 160, height: 160)
 
-            AsyncImage(url: URL(string: Theme.bicoMascotURL)) { phase in
+            AsyncImage(url: URL(string: Pico.bicoMascotURL)) { phase in
                 if let image = phase.image {
                     image
                         .resizable()
@@ -76,7 +67,7 @@ struct OnboardingView: View {
                 } else {
                     Image(systemName: "bird.fill")
                         .font(.system(size: 60))
-                        .foregroundStyle(Theme.tangerine)
+                        .foregroundStyle(Pico.deepForestGreen)
                 }
             }
             .frame(width: 100, height: 100)
@@ -89,16 +80,17 @@ struct OnboardingView: View {
     private var titleSection: some View {
         VStack(spacing: 8) {
             Text("Olá!")
-                .font(.system(.largeTitle, design: .rounded, weight: .bold))
-                .foregroundStyle(Theme.tangerine)
+                .font(.system(.largeTitle, design: .serif, weight: .bold))
+                .tracking(-0.5)
+                .foregroundStyle(Pico.deepForestGreen)
 
-            Text("Welcome to Bico")
-                .font(.title2.weight(.semibold))
-                .foregroundStyle(.white)
+            Text("Welcome to Pico")
+                .font(.system(.title2, design: .serif, weight: .semibold))
+                .foregroundStyle(Pico.deepForestGreen.opacity(0.8))
 
             Text("Choose your Portuguese dialect to begin")
-                .font(.subheadline)
-                .foregroundStyle(.white.opacity(0.5))
+                .font(.system(.subheadline, design: .rounded))
+                .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
                 .multilineTextAlignment(.center)
         }
         .opacity(appeared ? 1.0 : 0.0)
@@ -108,7 +100,7 @@ struct OnboardingView: View {
     private var dialectCards: some View {
         VStack(spacing: 16) {
             ForEach(Dialect.allCases, id: \.self) { dialect in
-                JungleDialectCard(
+                PicoDialectCard(
                     dialect: dialect,
                     isSelected: selectedOption == dialect,
                     action: {
@@ -131,15 +123,15 @@ struct OnboardingView: View {
             onDialectSelected(dialect)
         } label: {
             Text("Continue")
-                .font(.headline)
+                .font(.system(.headline, design: .rounded))
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .frame(height: 56)
                 .background(
                     selectedOption != nil
-                        ? AnyShapeStyle(Theme.tangerineGradient)
-                        : AnyShapeStyle(Color.white.opacity(0.1)),
-                    in: .rect(cornerRadius: 16)
+                        ? AnyShapeStyle(Pico.primaryGradient)
+                        : AnyShapeStyle(Pico.deepForestGreen.opacity(0.15)),
+                    in: .rect(cornerRadius: Pico.cardRadius)
                 )
         }
         .disabled(selectedOption == nil)
@@ -148,7 +140,7 @@ struct OnboardingView: View {
     }
 }
 
-struct JungleDialectCard: View {
+struct PicoDialectCard: View {
     let dialect: Dialect
     let isSelected: Bool
     let action: () -> Void
@@ -161,16 +153,16 @@ struct JungleDialectCard: View {
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(dialect.displayName)
-                        .font(.headline)
-                        .foregroundStyle(.white)
+                        .font(.system(.headline, design: .serif))
+                        .foregroundStyle(Pico.deepForestGreen)
 
                     Text(dialect.subtitle)
-                        .font(.subheadline)
-                        .foregroundStyle(.white.opacity(0.6))
+                        .font(.system(.subheadline, design: .rounded))
+                        .foregroundStyle(Pico.deepForestGreen.opacity(0.6))
 
                     Text(dialect.description)
-                        .font(.caption)
-                        .foregroundStyle(.white.opacity(0.35))
+                        .font(.system(.caption, design: .rounded))
+                        .foregroundStyle(Pico.deepForestGreen.opacity(0.35))
                         .lineLimit(2)
                 }
 
@@ -178,17 +170,22 @@ struct JungleDialectCard: View {
 
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .font(.title2)
-                    .foregroundStyle(isSelected ? Theme.tangerine : Color.white.opacity(0.3))
+                    .foregroundStyle(isSelected ? Pico.leafGreen : Pico.deepForestGreen.opacity(0.2))
                     .contentTransition(.symbolEffect(.replace))
             }
-            .padding(16)
+            .padding(Pico.spacingM)
             .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(isSelected ? Theme.tangerine.opacity(0.12) : Color.white.opacity(0.06))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .strokeBorder(isSelected ? Theme.tangerine : Color.white.opacity(0.08), lineWidth: isSelected ? 2 : 1)
+                RoundedRectangle(cornerRadius: Pico.cardRadius, style: .continuous)
+                    .fill(isSelected ? Pico.leafGreen.opacity(0.08) : Pico.cardSurface)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: Pico.cardRadius, style: .continuous)
+                            .strokeBorder(
+                                isSelected
+                                    ? AnyShapeStyle(Pico.leafGreen.opacity(0.4))
+                                    : AnyShapeStyle(Pico.cardLightStroke),
+                                lineWidth: isSelected ? 2 : 1
+                            )
+                    )
             )
         }
         .buttonStyle(.plain)

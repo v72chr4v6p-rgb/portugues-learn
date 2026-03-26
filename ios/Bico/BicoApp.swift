@@ -16,12 +16,12 @@ struct BicoApp: App {
                     .environment(progressService)
                     .environment(engagementService)
                     .environment(speechService)
-                    .tint(Theme.tangerine)
+                    .tint(Pico.deepForestGreen)
             } else {
                 OnboardingView(onDialectSelected: { dialect in
                     dialectRaw = dialect.rawValue
                 })
-                .tint(Theme.tangerine)
+                .tint(Pico.deepForestGreen)
             }
         }
     }
