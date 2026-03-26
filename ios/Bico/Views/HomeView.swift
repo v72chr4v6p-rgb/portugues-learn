@@ -8,6 +8,10 @@ struct HomeView: View {
     @Environment(SpeechService.self) private var speechService
     @State private var navigateToLevel: Level?
     @State private var showQuickReview: Bool = false
+    @State private var showFlashcards: Bool = false
+    @State private var showConversation: Bool = false
+    @State private var showCulture: Bool = false
+    @State private var showVerbExplorer: Bool = false
     @State private var animateStreak: Bool = false
     @State private var growthRingAppeared: Bool = false
 
@@ -74,12 +78,40 @@ struct HomeView: View {
             .navigationDestination(item: $navigateToLevel) { level in
                 LevelDetailView(level: level, dialect: dialect)
             }
+            .navigationDestination(isPresented: $showVerbExplorer) {
+                VerbExplorerView(dialect: dialect)
+            }
+            .navigationDestination(isPresented: $showCulture) {
+                CultureView(dialect: dialect)
+            }
             .fullScreenCover(isPresented: $showQuickReview) {
                 NavigationStack {
                     QuickReviewView(dialect: dialect)
                         .toolbar {
                             ToolbarItem(placement: .topBarLeading) {
                                 Button("Done") { showQuickReview = false }
+                                    .foregroundStyle(Pico.deepForestGreen)
+                            }
+                        }
+                }
+            }
+            .fullScreenCover(isPresented: $showFlashcards) {
+                NavigationStack {
+                    FlashcardView(dialect: dialect)
+                        .toolbar {
+                            ToolbarItem(placement: .topBarLeading) {
+                                Button("Done") { showFlashcards = false }
+                                    .foregroundStyle(Pico.deepForestGreen)
+                            }
+                        }
+                }
+            }
+            .fullScreenCover(isPresented: $showConversation) {
+                NavigationStack {
+                    ConversationPracticeView(dialect: dialect)
+                        .toolbar {
+                            ToolbarItem(placement: .topBarLeading) {
+                                Button("Done") { showConversation = false }
                                     .foregroundStyle(Pico.deepForestGreen)
                             }
                         }
@@ -93,8 +125,6 @@ struct HomeView: View {
             }
         }
     }
-
-    // MARK: - Botanical Header
 
     private var botanicalHeader: some View {
         ZStack(alignment: .bottomLeading) {
@@ -152,8 +182,6 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Level Badge
-
     private var levelBadge: some View {
         ZStack {
             Circle()
@@ -169,8 +197,6 @@ struct HomeView: View {
                 .foregroundStyle(Pico.deepForestGreen)
         }
     }
-
-    // MARK: - Growth Ring Widget
 
     private var growthRingWidget: some View {
         HStack(spacing: 20) {
@@ -232,8 +258,6 @@ struct HomeView: View {
         .picoCard()
     }
 
-    // MARK: - Streak & XP
-
     private var streakAndXPRow: some View {
         HStack(spacing: 12) {
             HStack(spacing: 10) {
@@ -270,8 +294,6 @@ struct HomeView: View {
             .picoCard()
         }
     }
-
-    // MARK: - Continue Card
 
     private func continueCard(level: Level) -> some View {
         Button {
@@ -313,8 +335,6 @@ struct HomeView: View {
         .sensoryFeedback(.selection, trigger: navigateToLevel)
     }
 
-    // MARK: - Learning Path Cards
-
     private var learningPathCards: some View {
         VStack(spacing: 14) {
             Text("Explore")
@@ -323,124 +343,126 @@ struct HomeView: View {
                 .foregroundStyle(Pico.deepForestGreen)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            pathCard(
-                title: "O Vocabulário",
-                subtitle: "Words & conjugations",
-                icon: "textformat.abc",
-                textureURL: Pico.leafVeinTextureURL,
-                tint: Pico.leafGreen
-            )
+            Button {
+                showVerbExplorer = true
+                HapticService.lightTap()
+            } label: {
+                exploreCardContent(
+                    title: "O Vocabulário",
+                    subtitle: "Words & conjugations",
+                    icon: "textformat.abc",
+                    textureURL: Pico.leafVeinTextureURL,
+                    tint: Pico.leafGreen
+                )
+            }
+            .buttonStyle(.plain)
 
-            pathCard(
-                title: "A Conversa",
-                subtitle: "Practice & drills",
-                icon: "bubble.left.and.bubble.right.fill",
-                textureURL: Pico.stoneArchTextureURL,
-                tint: Pico.deepForestGreen
-            )
+            Button {
+                showConversation = true
+                HapticService.lightTap()
+            } label: {
+                exploreCardContent(
+                    title: "A Conversa",
+                    subtitle: dialect == .brazilian ? "Brazilian conversation drills" : "Portuguese conversation drills",
+                    icon: "bubble.left.and.bubble.right.fill",
+                    textureURL: Pico.stoneArchTextureURL,
+                    tint: Pico.deepForestGreen
+                )
+            }
+            .buttonStyle(.plain)
 
-            culturalCard
-        }
-    }
-
-    private func pathCard(title: String, subtitle: String, icon: String, textureURL: String, tint: Color) -> some View {
-        Button {
-            HapticService.lightTap()
-        } label: {
-            HStack(spacing: 0) {
-                VStack(alignment: .leading, spacing: 6) {
-                    Image(systemName: icon)
-                        .font(.title2)
-                        .foregroundStyle(tint)
-                    Spacer()
-                    Text(title)
-                        .font(.system(.title3, design: .serif, weight: .bold))
-                        .tracking(-0.3)
-                        .foregroundStyle(Pico.deepForestGreen)
-                    Text(subtitle)
-                        .font(.system(.caption, design: .rounded))
-                        .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
-                }
-                .padding(20)
-
-                Spacer()
-
-                Color.clear
-                    .frame(width: 100)
-                    .overlay {
-                        AsyncImage(url: URL(string: textureURL)) { phase in
-                            if let image = phase.image {
-                                image
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .opacity(0.3)
-                            }
-                        }
-                        .allowsHitTesting(false)
+            Button {
+                showCulture = true
+                HapticService.lightTap()
+            } label: {
+                HStack(spacing: 0) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Image(systemName: dialect == .brazilian ? "globe.americas.fill" : "globe.europe.africa.fill")
+                            .font(.title2)
+                            .foregroundStyle(Pico.terracotta)
+                        Spacer()
+                        Text("Cultura")
+                            .font(.system(.title3, design: .serif, weight: .bold))
+                            .tracking(-0.3)
+                            .foregroundStyle(Pico.deepForestGreen)
+                        Text(dialect == .brazilian ? "Brazilian culture & tips" : "Portuguese culture & tips")
+                            .font(.system(.caption, design: .rounded))
+                            .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
                     }
-                    .clipped()
-            }
-            .frame(height: 120)
-            .background(
-                RoundedRectangle(cornerRadius: Pico.cardRadius, style: .continuous)
-                    .fill(Pico.cardSurface)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: Pico.cardRadius, style: .continuous)
-                            .strokeBorder(Pico.cardLightStroke, lineWidth: 1)
-                    )
-            )
-            .clipShape(.rect(cornerRadius: Pico.cardRadius, style: .continuous))
-        }
-        .buttonStyle(.plain)
-    }
+                    .padding(20)
 
-    private var culturalCard: some View {
-        Button {
-            HapticService.lightTap()
-        } label: {
-            HStack(spacing: 0) {
-                VStack(alignment: .leading, spacing: 6) {
-                    Image(systemName: "globe.americas.fill")
-                        .font(.title2)
-                        .foregroundStyle(Pico.terracotta)
                     Spacer()
-                    Text("Cultura")
-                        .font(.system(.title3, design: .serif, weight: .bold))
-                        .tracking(-0.3)
-                        .foregroundStyle(Pico.deepForestGreen)
-                    Text("Brazilian culture & tips")
-                        .font(.system(.caption, design: .rounded))
-                        .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
-                }
-                .padding(20)
 
-                Spacer()
-
-                ZStack {
-                    Circle()
-                        .fill(Pico.terracotta.opacity(0.08))
-                        .frame(width: 80, height: 80)
-                    Image(systemName: "sun.max.fill")
-                        .font(.system(size: 32))
-                        .foregroundStyle(Pico.terracotta.opacity(0.25))
+                    ZStack {
+                        Circle()
+                            .fill(Pico.terracotta.opacity(0.08))
+                            .frame(width: 80, height: 80)
+                        Image(systemName: "sun.max.fill")
+                            .font(.system(size: 32))
+                            .foregroundStyle(Pico.terracotta.opacity(0.25))
+                    }
+                    .padding(.trailing, 20)
                 }
-                .padding(.trailing, 20)
+                .frame(height: 120)
+                .background(
+                    RoundedRectangle(cornerRadius: Pico.cardRadius, style: .continuous)
+                        .fill(Pico.cardSurface)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: Pico.cardRadius, style: .continuous)
+                                .strokeBorder(Pico.cardLightStroke, lineWidth: 1)
+                        )
+                )
+                .clipShape(.rect(cornerRadius: Pico.cardRadius, style: .continuous))
             }
-            .frame(height: 120)
-            .background(
-                RoundedRectangle(cornerRadius: Pico.cardRadius, style: .continuous)
-                    .fill(Pico.cardSurface)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: Pico.cardRadius, style: .continuous)
-                            .strokeBorder(Pico.cardLightStroke, lineWidth: 1)
-                    )
-            )
-            .clipShape(.rect(cornerRadius: Pico.cardRadius, style: .continuous))
+            .buttonStyle(.plain)
         }
-        .buttonStyle(.plain)
     }
 
-    // MARK: - Quick Actions
+    private func exploreCardContent(title: String, subtitle: String, icon: String, textureURL: String, tint: Color) -> some View {
+        HStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: 6) {
+                Image(systemName: icon)
+                    .font(.title2)
+                    .foregroundStyle(tint)
+                Spacer()
+                Text(title)
+                    .font(.system(.title3, design: .serif, weight: .bold))
+                    .tracking(-0.3)
+                    .foregroundStyle(Pico.deepForestGreen)
+                Text(subtitle)
+                    .font(.system(.caption, design: .rounded))
+                    .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
+            }
+            .padding(20)
+
+            Spacer()
+
+            Color.clear
+                .frame(width: 100)
+                .overlay {
+                    AsyncImage(url: URL(string: textureURL)) { phase in
+                        if let image = phase.image {
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .opacity(0.3)
+                        }
+                    }
+                    .allowsHitTesting(false)
+                }
+                .clipped()
+        }
+        .frame(height: 120)
+        .background(
+            RoundedRectangle(cornerRadius: Pico.cardRadius, style: .continuous)
+                .fill(Pico.cardSurface)
+                .overlay(
+                    RoundedRectangle(cornerRadius: Pico.cardRadius, style: .continuous)
+                        .strokeBorder(Pico.cardLightStroke, lineWidth: 1)
+                )
+        )
+        .clipShape(.rect(cornerRadius: Pico.cardRadius, style: .continuous))
+    }
 
     private var quickActionsRow: some View {
         HStack(spacing: 12) {
@@ -458,6 +480,7 @@ struct HomeView: View {
                 title: "Flashcards",
                 color: Pico.softTeal
             ) {
+                showFlashcards = true
                 HapticService.lightTap()
             }
         }
@@ -486,8 +509,6 @@ struct HomeView: View {
         }
         .buttonStyle(.plain)
     }
-
-    // MARK: - Review Section
 
     private var reviewSection: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -541,8 +562,6 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Tip
-
     private var todaysTip: some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: "lightbulb.fill")
@@ -562,8 +581,6 @@ struct HomeView: View {
         .picoCard()
     }
 
-    // MARK: - Helpers
-
     private var greetingText: String {
         let hour = Calendar.current.component(.hour, from: Date())
         if hour < 12 { return "Bom dia" }
@@ -579,15 +596,33 @@ struct HomeView: View {
     }
 
     private var dailyTip: String {
-        let tips = [
-            "In Brazilian Portuguese, 'você' is standard. In European Portuguese, 'tu' is more common for informal situations.",
+        let brTips = [
+            "In Brazilian Portuguese, 'você' is standard for 'you.' It takes the third-person conjugation.",
+            "Brazilians love the gerund: 'Estou falando' (I am speaking). This -ando/-endo/-indo form is everywhere!",
             "Regular -AR verbs are the most common group. Master their pattern and you can conjugate hundreds of verbs!",
             "SER vs ESTAR is one of the trickiest distinctions. SER = permanent (identity), ESTAR = temporary (state).",
             "Portuguese has nasal vowels (ã, õ) that don't exist in English. Practice makes them natural!",
             "The personal infinitive is unique to Portuguese — no other Romance language has it!",
             "Try saying conjugations out loud. Muscle memory helps you recall forms faster.",
-            "Don't try to memorize everything at once. Spaced repetition (flashcards) is scientifically proven to work."
+            "In Brazil, 'a gente' is commonly used as an informal way to say 'we' — it takes singular conjugation.",
+            "Don't try to memorize everything at once. Spaced repetition (flashcards) is scientifically proven to work.",
+            "'Tudo bem?' is the most common Brazilian greeting — it literally means 'Everything well?'"
         ]
+
+        let ptTips = [
+            "In European Portuguese, 'tu' is standard for informal 'you.' Using 'você' can sound overly formal.",
+            "In Portugal, the present continuous uses 'a + infinitive': 'Estou a falar' (I am speaking).",
+            "Regular -AR verbs are the most common group. Master their pattern and you can conjugate hundreds of verbs!",
+            "SER vs ESTAR is one of the trickiest distinctions. SER = permanent (identity), ESTAR = temporary (state).",
+            "European Portuguese swallows many vowels — 'porque' sounds more like 'prk'. Listen carefully!",
+            "The personal infinitive is unique to Portuguese — no other Romance language has it!",
+            "Try saying conjugations out loud. Muscle memory helps you recall forms faster.",
+            "In Portugal, pronoun placement follows strict rules: 'Diz-me' (Tell me), not 'Me diz.'",
+            "Don't try to memorize everything at once. Spaced repetition (flashcards) is scientifically proven to work.",
+            "'Está bom?' is a common Portuguese greeting — similar to 'How's it going?'"
+        ]
+
+        let tips = dialect == .brazilian ? brTips : ptTips
         let dayOfYear = Calendar.current.ordinality(of: .day, in: .year, for: Date()) ?? 0
         return tips[dayOfYear % tips.count]
     }
