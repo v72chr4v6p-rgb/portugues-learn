@@ -30,7 +30,7 @@ struct LevelDetailView: View {
             }
             .padding(.vertical, 20)
         }
-        .background(Color(.systemGroupedBackground))
+        .background(Pico.plaster.ignoresSafeArea())
         .navigationTitle("Level \(level.level)")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(item: Binding(
@@ -63,7 +63,7 @@ struct LevelDetailView: View {
                                     .font(.body.weight(.semibold))
                                 Text("Exit")
                             }
-                            .foregroundStyle(Theme.tangerine)
+                            .foregroundStyle(Pico.deepForestGreen)
                         }
                     }
                 }
@@ -76,27 +76,29 @@ struct LevelDetailView: View {
             HStack(spacing: 12) {
                 ZStack {
                     Circle()
-                        .fill(Theme.tangerine.opacity(0.12))
+                        .fill(Pico.deepForestGreen.opacity(0.08))
                         .frame(width: 48, height: 48)
                     Image(systemName: level.zone.icon)
                         .font(.title3)
-                        .foregroundStyle(Theme.tangerine)
+                        .foregroundStyle(Pico.deepForestGreen)
                 }
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text(level.tense)
-                        .font(.title3.weight(.bold))
+                        .font(.system(.title3, design: .serif, weight: .bold))
+                        .tracking(-0.3)
+                        .foregroundStyle(Pico.deepForestGreen)
                     HStack(spacing: 6) {
                         Text(level.zone.rawValue)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .font(.system(.subheadline, design: .rounded))
+                            .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
                         if level.isSpecial {
                             Text("Special")
-                                .font(.caption2.weight(.bold))
-                                .foregroundStyle(Theme.tangerine)
+                                .font(.system(.caption2, design: .rounded, weight: .bold))
+                                .foregroundStyle(Pico.terracotta)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 2)
-                                .background(Theme.tangerine.opacity(0.12), in: Capsule())
+                                .background(Pico.terracotta.opacity(0.1), in: Capsule())
                         }
                     }
                 }
@@ -104,28 +106,29 @@ struct LevelDetailView: View {
             }
 
             Text(levelDescription)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(.system(.subheadline, design: .rounded))
+                .foregroundStyle(Pico.deepForestGreen.opacity(0.6))
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             let prog = progressService.progress(for: level.level)
             if prog.totalAttempts > 0 {
                 HStack(spacing: 10) {
-                    miniStat(icon: "checkmark.circle.fill", value: "\(prog.correctAttempts)", label: "Correct", color: .green)
+                    miniStat(icon: "checkmark.circle.fill", value: "\(prog.correctAttempts)", label: "Correct", color: Pico.leafGreen)
                     miniStat(icon: "flame.fill", value: "\(prog.bestScore)", label: "Best", color: .orange)
-                    miniStat(icon: "target", value: prog.totalAttempts > 0 ? "\(Int(Double(prog.correctAttempts) / Double(prog.totalAttempts) * 100))%" : "—", label: "Accuracy", color: Theme.tangerine)
+                    miniStat(icon: "target", value: prog.totalAttempts > 0 ? "\(Int(Double(prog.correctAttempts) / Double(prog.totalAttempts) * 100))%" : "—", label: "Accuracy", color: Pico.deepForestGreen)
                 }
             }
         }
-        .padding(16)
-        .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: 16))
+        .picoCard()
         .padding(.horizontal, 16)
     }
 
     private var verbCardsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Verbs in this Level")
-                .font(.headline)
+                .font(.system(.headline, design: .serif, weight: .bold))
+                .tracking(-0.3)
+                .foregroundStyle(Pico.deepForestGreen)
                 .padding(.horizontal, 16)
 
             ScrollView(.horizontal, showsIndicators: false) {
@@ -135,10 +138,11 @@ struct LevelDetailView: View {
                             HStack {
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(verb.infinitive)
-                                        .font(.headline)
+                                        .font(.system(.headline, design: .rounded))
+                                        .foregroundStyle(Pico.deepForestGreen)
                                     Text(verb.translation)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .font(.system(.caption, design: .rounded))
+                                        .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
                                 }
                                 Spacer()
                                 Button {
@@ -146,16 +150,16 @@ struct LevelDetailView: View {
                                 } label: {
                                     Image(systemName: "speaker.wave.2.fill")
                                         .font(.subheadline)
-                                        .foregroundStyle(Theme.tangerine)
+                                        .foregroundStyle(Pico.deepForestGreen)
                                         .frame(width: 36, height: 36)
-                                        .background(Theme.tangerine.opacity(0.1), in: Circle())
+                                        .background(Pico.deepForestGreen.opacity(0.08), in: Circle())
                                 }
                             }
 
                             if verb.irregular {
                                 HStack {
                                     Text("Irregular")
-                                        .font(.caption2.weight(.bold))
+                                        .font(.system(.caption2, design: .rounded, weight: .bold))
                                         .foregroundStyle(.orange)
                                         .padding(.horizontal, 8)
                                         .padding(.vertical, 2)
@@ -169,18 +173,19 @@ struct LevelDetailView: View {
                                 ForEach(Array(conjugations.sorted(by: { $0.key < $1.key })), id: \.key) { key, value in
                                     HStack(spacing: 8) {
                                         Text(Pronoun(rawValue: key)?.shortName ?? key)
-                                            .font(.caption2.weight(.medium))
-                                            .foregroundStyle(.secondary)
+                                            .font(.system(.caption2, design: .rounded, weight: .medium))
+                                            .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
                                             .frame(width: 50, alignment: .trailing)
                                         Text(value)
-                                            .font(.caption.weight(.semibold))
+                                            .font(.system(.caption, design: .rounded, weight: .semibold))
+                                            .foregroundStyle(Pico.deepForestGreen)
                                         Spacer()
                                         Button {
                                             speechService.speak(value, dialect: dialect)
                                         } label: {
                                             Image(systemName: "speaker.wave.1.fill")
                                                 .font(.system(size: 10))
-                                                .foregroundStyle(Theme.tangerine.opacity(0.6))
+                                                .foregroundStyle(Pico.deepForestGreen.opacity(0.4))
                                         }
                                     }
                                 }
@@ -188,7 +193,14 @@ struct LevelDetailView: View {
                         }
                         .padding(14)
                         .frame(width: 220)
-                        .background(Color(.tertiarySystemBackground), in: .rect(cornerRadius: 14))
+                        .background(
+                            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                                .fill(Pico.cardSurface)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                                        .strokeBorder(Pico.cardLightStroke, lineWidth: 1)
+                                )
+                        )
                     }
                 }
             }
@@ -200,10 +212,12 @@ struct LevelDetailView: View {
         VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Lessons")
-                    .font(.title3.weight(.bold))
+                    .font(.system(.title3, design: .serif, weight: .bold))
+                    .tracking(-0.3)
+                    .foregroundStyle(Pico.deepForestGreen)
                 Text("Learn the theory before you practice")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(.system(.subheadline, design: .rounded))
+                    .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
             }
             .padding(.horizontal, 16)
 
@@ -230,21 +244,21 @@ struct LevelDetailView: View {
         VStack(spacing: 8) {
             ZStack {
                 Circle()
-                    .fill(Color(.tertiarySystemBackground))
+                    .fill(Pico.cardSurface)
                     .frame(width: 68, height: 68)
                     .overlay {
                         Circle()
-                            .strokeBorder(Theme.tangerine.opacity(0.3), lineWidth: 2)
+                            .strokeBorder(Pico.deepForestGreen.opacity(0.15), lineWidth: 1.5)
                     }
 
                 Image(systemName: lesson.icon)
                     .font(.title2)
-                    .foregroundStyle(Theme.tangerine)
+                    .foregroundStyle(Pico.deepForestGreen)
             }
 
             Text(lesson.title)
-                .font(.caption.weight(.medium))
-                .foregroundStyle(.primary)
+                .font(.system(.caption, design: .rounded, weight: .medium))
+                .foregroundStyle(Pico.deepForestGreen)
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
                 .frame(maxWidth: .infinity)
@@ -255,12 +269,14 @@ struct LevelDetailView: View {
         VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Practice")
-                    .font(.title3.weight(.bold))
+                    .font(.system(.title3, design: .serif, weight: .bold))
+                    .tracking(-0.3)
+                    .foregroundStyle(Pico.deepForestGreen)
 
                 let verbNames = level.verbs.prefix(4).map(\.infinitive).joined(separator: ", ")
                 Text("Conjugate \(level.verbs.count) verb\(level.verbs.count == 1 ? "" : "s") in the \(level.tense): \(verbNames)")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(.system(.subheadline, design: .rounded))
+                    .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
             }
             .padding(.horizontal, 16)
 
@@ -284,19 +300,19 @@ struct LevelDetailView: View {
                     VStack(spacing: 8) {
                         ZStack {
                             Circle()
-                                .fill(Color(.tertiarySystemBackground))
+                                .fill(Pico.cardSurface)
                                 .frame(width: 68, height: 68)
                                 .overlay {
                                     Circle()
-                                        .strokeBorder(Theme.sage.opacity(0.3), lineWidth: 2)
+                                        .strokeBorder(Pico.leafGreen.opacity(0.2), lineWidth: 1.5)
                                 }
                             Image(systemName: "pencil.line")
                                 .font(.title2)
-                                .foregroundStyle(Theme.sage)
+                                .foregroundStyle(Pico.leafGreen)
                         }
                         Text("All Pronouns")
-                            .font(.caption.weight(.medium))
-                            .foregroundStyle(.primary)
+                            .font(.system(.caption, design: .rounded, weight: .medium))
+                            .foregroundStyle(Pico.deepForestGreen)
                             .multilineTextAlignment(.center)
                             .lineLimit(2)
                             .frame(maxWidth: .infinity)
@@ -318,22 +334,22 @@ struct LevelDetailView: View {
         return VStack(spacing: 8) {
             ZStack {
                 Circle()
-                    .fill(Color(.tertiarySystemBackground))
+                    .fill(Pico.cardSurface)
                     .frame(width: 68, height: 68)
                     .overlay {
                         Circle()
                             .strokeBorder(
-                                hasProgress ? Theme.tangerine.opacity(0.5) : Theme.tangerine.opacity(0.3),
-                                lineWidth: 2
+                                hasProgress ? Pico.deepForestGreen.opacity(0.3) : Pico.deepForestGreen.opacity(0.15),
+                                lineWidth: 1.5
                             )
                     }
                 Text(pronoun.shortName.prefix(2))
-                    .font(.title3.weight(.bold))
-                    .foregroundStyle(Theme.tangerine)
+                    .font(.system(.title3, design: .rounded, weight: .bold))
+                    .foregroundStyle(Pico.deepForestGreen)
             }
             Text(pronoun.displayName)
-                .font(.caption.weight(.medium))
-                .foregroundStyle(.primary)
+                .font(.system(.caption, design: .rounded, weight: .medium))
+                .foregroundStyle(Pico.deepForestGreen)
                 .multilineTextAlignment(.center)
                 .lineLimit(1)
                 .frame(maxWidth: .infinity)
@@ -354,13 +370,13 @@ struct LevelDetailView: View {
             HStack(spacing: 8) {
                 Image(systemName: progressService.isLevelCracked(level.level) ? "wrench.and.screwdriver" : "play.fill")
                 Text(progressService.isLevelCracked(level.level) ? "Repair Session" : "Start Full Practice")
-                    .font(.headline)
+                    .font(.system(.headline, design: .rounded))
             }
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity)
             .frame(height: 52)
-            .background(Theme.tangerineGradient, in: .rect(cornerRadius: 14))
-            .shadow(color: Theme.tangerine.opacity(0.3), radius: 8, y: 4)
+            .background(Pico.primaryGradient, in: .rect(cornerRadius: 14))
+            .shadow(color: Pico.deepForestGreen.opacity(0.2), radius: 8, y: 4)
         }
     }
 
@@ -371,15 +387,16 @@ struct LevelDetailView: View {
                     .font(.caption2)
                     .foregroundStyle(color)
                 Text(value)
-                    .font(.subheadline.weight(.bold).monospacedDigit())
+                    .font(.system(.subheadline, design: .rounded, weight: .bold).monospacedDigit())
+                    .foregroundStyle(Pico.deepForestGreen)
             }
             Text(label)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
+                .font(.system(.caption2, design: .rounded))
+                .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 8)
-        .background(Color(.tertiarySystemBackground), in: .rect(cornerRadius: 10))
+        .background(Pico.cardSurface, in: .rect(cornerRadius: 10))
     }
 
     private func startPractice(pronoun: Pronoun?) {

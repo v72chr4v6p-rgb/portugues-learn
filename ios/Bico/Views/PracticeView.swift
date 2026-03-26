@@ -11,7 +11,7 @@ struct PracticeView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(.systemGroupedBackground).ignoresSafeArea()
+                Pico.plaster.ignoresSafeArea()
 
                 if let vm = viewModel {
                     if !vm.isSessionActive {
@@ -26,6 +26,12 @@ struct PracticeView: View {
             .navigationTitle("Practice")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("Practice")
+                        .font(.system(.headline, design: .serif, weight: .bold))
+                        .tracking(-0.3)
+                        .foregroundStyle(Pico.deepForestGreen)
+                }
                 if let vm = viewModel, vm.isSessionActive && !vm.isComplete {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button("End") {
@@ -55,26 +61,30 @@ struct PracticeView: View {
                 VStack(spacing: 14) {
                     ZStack {
                         Circle()
-                            .fill(Theme.tangerine.opacity(0.1))
+                            .fill(Pico.deepForestGreen.opacity(0.08))
                             .frame(width: 90, height: 90)
                         Image(systemName: "brain.head.profile.fill")
                             .font(.system(size: 40))
-                            .foregroundStyle(Theme.tangerine)
+                            .foregroundStyle(Pico.deepForestGreen)
                     }
 
                     Text("Conjugation Practice")
-                        .font(.title2.weight(.bold))
+                        .font(.system(.title2, design: .serif, weight: .bold))
+                        .tracking(-0.3)
+                        .foregroundStyle(Pico.deepForestGreen)
 
                     Text("Test your knowledge across tenses and pronouns")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(.system(.subheadline, design: .rounded))
+                        .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
                         .multilineTextAlignment(.center)
                 }
                 .padding(.top, 20)
 
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Select Tense")
-                        .font(.headline)
+                        .font(.system(.headline, design: .serif, weight: .bold))
+                        .tracking(-0.3)
+                        .foregroundStyle(Pico.deepForestGreen)
 
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
@@ -84,22 +94,22 @@ struct PracticeView: View {
                                     HapticService.selection()
                                 } label: {
                                     Text(tense)
-                                        .font(.subheadline.weight(.semibold))
+                                        .font(.system(.subheadline, design: .rounded, weight: .semibold))
                                         .padding(.horizontal, 14)
                                         .padding(.vertical, 8)
                                         .background(
                                             vm.selectedTense == tense
-                                                ? Theme.tangerine.opacity(0.15)
-                                                : Color(.tertiarySystemBackground),
+                                                ? Pico.deepForestGreen.opacity(0.12)
+                                                : Pico.cardSurface,
                                             in: Capsule()
                                         )
                                         .overlay(
                                             Capsule().strokeBorder(
-                                                vm.selectedTense == tense ? Theme.tangerine : .clear,
+                                                vm.selectedTense == tense ? Pico.deepForestGreen : .clear,
                                                 lineWidth: 1.5
                                             )
                                         )
-                                        .foregroundStyle(vm.selectedTense == tense ? Theme.tangerine : .primary)
+                                        .foregroundStyle(vm.selectedTense == tense ? Pico.deepForestGreen : Pico.deepForestGreen.opacity(0.6))
                                 }
                                 .buttonStyle(.plain)
                             }
@@ -110,7 +120,9 @@ struct PracticeView: View {
 
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Practice Mode")
-                        .font(.headline)
+                        .font(.system(.headline, design: .serif, weight: .bold))
+                        .tracking(-0.3)
+                        .foregroundStyle(Pico.deepForestGreen)
 
                     HStack(spacing: 12) {
                         ForEach(PracticeMode.allCases, id: \.self) { mode in
@@ -122,25 +134,24 @@ struct PracticeView: View {
                                     Image(systemName: mode.icon)
                                         .font(.title3)
                                     Text(mode.rawValue)
-                                        .font(.caption.weight(.semibold))
+                                        .font(.system(.caption, design: .rounded, weight: .semibold))
                                         .lineLimit(1)
                                         .minimumScaleFactor(0.8)
                                 }
+                                .foregroundStyle(vm.practiceMode == mode ? Pico.deepForestGreen : Pico.deepForestGreen.opacity(0.5))
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 16)
                                 .background(
-                                    vm.practiceMode == mode
-                                        ? Theme.tangerine.opacity(0.15)
-                                        : Color(.tertiarySystemBackground),
-                                    in: .rect(cornerRadius: 12)
+                                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                        .fill(vm.practiceMode == mode ? Pico.deepForestGreen.opacity(0.1) : Pico.cardSurface)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                                .strokeBorder(
+                                                    vm.practiceMode == mode ? AnyShapeStyle(Pico.deepForestGreen.opacity(0.3)) : AnyShapeStyle(Pico.cardLightStroke),
+                                                    lineWidth: 1
+                                                )
+                                        )
                                 )
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 12).strokeBorder(
-                                        vm.practiceMode == mode ? Theme.tangerine : .clear,
-                                        lineWidth: 1.5
-                                    )
-                                )
-                                .foregroundStyle(vm.practiceMode == mode ? Theme.tangerine : .primary)
                             }
                             .buttonStyle(.plain)
                         }
@@ -157,17 +168,18 @@ struct PracticeView: View {
                     HStack(spacing: 8) {
                         Image(systemName: "play.fill")
                         Text("Start Practice")
-                            .font(.headline)
+                            .font(.system(.headline, design: .rounded))
                     }
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .frame(height: 56)
-                    .background(Theme.tangerineGradient, in: .rect(cornerRadius: 16))
-                    .shadow(color: Theme.tangerine.opacity(0.3), radius: 8, y: 4)
+                    .background(Pico.primaryGradient, in: .rect(cornerRadius: 16))
+                    .shadow(color: Pico.deepForestGreen.opacity(0.2), radius: 8, y: 4)
                 }
                 .padding(.top, 8)
             }
-            .padding(20)
+            .padding(.horizontal, Pico.spacingXL)
+            .padding(.bottom, 40)
         }
     }
 
@@ -175,8 +187,8 @@ struct PracticeView: View {
         VStack(spacing: 0) {
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
-                    Capsule().fill(Color(.systemGray5)).frame(height: 8)
-                    Capsule().fill(Theme.tangerineGradient)
+                    Capsule().fill(Pico.earthBrown.opacity(0.08)).frame(height: 8)
+                    Capsule().fill(Pico.primaryGradient)
                         .frame(width: geo.size.width * vm.progress, height: 8)
                         .animation(.spring, value: vm.progress)
                 }
@@ -191,12 +203,13 @@ struct PracticeView: View {
                         .font(.caption)
                         .foregroundStyle(.orange)
                     Text("\(vm.score)")
-                        .font(.subheadline.weight(.bold).monospacedDigit())
+                        .font(.system(.subheadline, design: .rounded, weight: .bold).monospacedDigit())
+                        .foregroundStyle(Pico.deepForestGreen)
                 }
                 Spacer()
                 Text("\(vm.currentIndex + 1) / \(vm.practiceItems.count)")
-                    .font(.subheadline.weight(.medium).monospacedDigit())
-                    .foregroundStyle(.secondary)
+                    .font(.system(.subheadline, design: .rounded, weight: .medium).monospacedDigit())
+                    .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
             }
             .padding(.horizontal, 20)
             .padding(.top, 10)
@@ -230,33 +243,34 @@ struct PracticeView: View {
     private func questionCard(item: PracticeViewModel.PracticeItem, vm: PracticeViewModel) -> some View {
         VStack(spacing: 20) {
             Text(item.tense)
-                .font(.caption.weight(.bold))
-                .foregroundStyle(Theme.tangerine)
+                .font(.system(.caption, design: .rounded, weight: .bold))
+                .foregroundStyle(Pico.deepForestGreen)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 5)
-                .background(Theme.tangerine.opacity(0.1), in: Capsule())
+                .background(Pico.deepForestGreen.opacity(0.08), in: Capsule())
 
             VStack(spacing: 6) {
                 Text(item.pronoun.displayName)
-                    .font(.title3.weight(.medium))
-                    .foregroundStyle(.secondary)
+                    .font(.system(.title3, design: .rounded, weight: .medium))
+                    .foregroundStyle(Pico.deepForestGreen.opacity(0.6))
 
                 Text(item.verb.infinitive)
                     .font(.system(size: 34, weight: .bold, design: .rounded))
+                    .foregroundStyle(Pico.deepForestGreen)
 
                 HStack(spacing: 10) {
                     Text(item.verb.translation)
-                        .font(.subheadline)
-                        .foregroundStyle(.tertiary)
+                        .font(.system(.subheadline, design: .rounded))
+                        .foregroundStyle(Pico.deepForestGreen.opacity(0.4))
 
                     Button {
                         speechService.speak(item.verb.infinitive, dialect: dialect)
                     } label: {
                         Image(systemName: "speaker.wave.2.fill")
                             .font(.body)
-                            .foregroundStyle(Theme.tangerine)
+                            .foregroundStyle(Pico.deepForestGreen)
                             .frame(width: 36, height: 36)
-                            .background(Theme.tangerine.opacity(0.1), in: Circle())
+                            .background(Pico.deepForestGreen.opacity(0.08), in: Circle())
                     }
                 }
             }
@@ -266,23 +280,30 @@ struct PracticeView: View {
                     Image(systemName: "exclamationmark.triangle.fill")
                         .font(.caption2)
                     Text("Irregular")
-                        .font(.caption.weight(.semibold))
+                        .font(.system(.caption, design: .rounded, weight: .semibold))
                 }
                 .foregroundStyle(.orange)
             }
         }
         .padding(24)
         .frame(maxWidth: .infinity)
-        .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: 20))
+        .background(
+            RoundedRectangle(cornerRadius: Pico.cardRadius, style: .continuous)
+                .fill(Pico.cardSurface)
+                .overlay(
+                    RoundedRectangle(cornerRadius: Pico.cardRadius, style: .continuous)
+                        .strokeBorder(Pico.cardLightStroke, lineWidth: 1)
+                )
+        )
     }
 
     private func typingSection(vm: PracticeViewModel) -> some View {
         VStack(spacing: 12) {
             TextField("Type the conjugation...", text: Bindable(vm).userAnswer)
-                .font(.title3)
+                .font(.system(.title3, design: .rounded))
                 .multilineTextAlignment(.center)
                 .padding(16)
-                .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: 14))
+                .background(Pico.cardSurface, in: .rect(cornerRadius: 14))
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
                 .padding(.horizontal, 20)
@@ -296,15 +317,16 @@ struct PracticeView: View {
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 6) {
-                    ForEach(Theme.portugueseChars, id: \.self) { char in
+                    ForEach(Pico.portugueseChars, id: \.self) { char in
                         Button {
                             vm.userAnswer += char
                             HapticService.lightTap()
                         } label: {
                             Text(char)
                                 .font(.system(.body, design: .rounded, weight: .medium))
+                                .foregroundStyle(Pico.deepForestGreen)
                                 .frame(width: 38, height: 38)
-                                .background(Color(.tertiarySystemBackground), in: .rect(cornerRadius: 8))
+                                .background(Pico.cardSurface, in: .rect(cornerRadius: 8))
                         }
                         .buttonStyle(.plain)
                         .disabled(vm.showingResult)
@@ -319,14 +341,14 @@ struct PracticeView: View {
                     awardPracticeXP(vm: vm)
                 } label: {
                     Text("Check")
-                        .font(.headline)
+                        .font(.system(.headline, design: .rounded))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 52)
                         .background(
                             vm.userAnswer.isEmpty
-                                ? AnyShapeStyle(Color(.systemGray4))
-                                : AnyShapeStyle(Theme.tangerineGradient),
+                                ? AnyShapeStyle(Pico.earthBrown.opacity(0.2))
+                                : AnyShapeStyle(Pico.primaryGradient),
                             in: .rect(cornerRadius: 14)
                         )
                 }
@@ -345,12 +367,13 @@ struct PracticeView: View {
                 } label: {
                     HStack {
                         Text(option)
-                            .font(.body.weight(.medium))
+                            .font(.system(.body, design: .rounded, weight: .medium))
+                            .foregroundStyle(mcOptionFg(option, vm: vm))
                         Spacer()
                         if vm.showingResult {
                             if option.lowercased() == vm.correctAnswer.lowercased() {
                                 Image(systemName: "checkmark.circle.fill")
-                                    .foregroundStyle(.green)
+                                    .foregroundStyle(Pico.leafGreen)
                             } else if option == vm.userAnswer && vm.isCorrect == false {
                                 Image(systemName: "xmark.circle.fill")
                                     .foregroundStyle(.red)
@@ -360,7 +383,6 @@ struct PracticeView: View {
                     .padding(.horizontal, 20)
                     .padding(.vertical, 16)
                     .background(mcOptionBg(option, vm: vm), in: .rect(cornerRadius: 14))
-                    .foregroundStyle(mcOptionFg(option, vm: vm))
                 }
                 .buttonStyle(.plain)
                 .disabled(vm.showingResult)
@@ -370,17 +392,17 @@ struct PracticeView: View {
     }
 
     private func mcOptionBg(_ option: String, vm: PracticeViewModel) -> some ShapeStyle {
-        guard vm.showingResult else { return AnyShapeStyle(Color(.secondarySystemBackground)) }
-        if option.lowercased() == vm.correctAnswer.lowercased() { return AnyShapeStyle(Color.green.opacity(0.1)) }
+        guard vm.showingResult else { return AnyShapeStyle(Pico.cardSurface) }
+        if option.lowercased() == vm.correctAnswer.lowercased() { return AnyShapeStyle(Pico.leafGreen.opacity(0.1)) }
         if option == vm.userAnswer && vm.isCorrect == false { return AnyShapeStyle(Color.red.opacity(0.1)) }
-        return AnyShapeStyle(Color(.secondarySystemBackground))
+        return AnyShapeStyle(Pico.cardSurface)
     }
 
     private func mcOptionFg(_ option: String, vm: PracticeViewModel) -> Color {
-        guard vm.showingResult else { return .primary }
-        if option.lowercased() == vm.correctAnswer.lowercased() { return .green }
+        guard vm.showingResult else { return Pico.deepForestGreen }
+        if option.lowercased() == vm.correctAnswer.lowercased() { return Pico.leafGreen }
         if option == vm.userAnswer && vm.isCorrect == false { return .red }
-        return .secondary
+        return Pico.deepForestGreen.opacity(0.4)
     }
 
     private func awardPracticeXP(vm: PracticeViewModel) {
@@ -393,20 +415,21 @@ struct PracticeView: View {
             HStack(spacing: 12) {
                 ZStack {
                     Circle()
-                        .fill((vm.isCorrect == true ? Color.green : Color.red).opacity(0.12))
+                        .fill((vm.isCorrect == true ? Pico.leafGreen : Color.red).opacity(0.12))
                         .frame(width: 44, height: 44)
                     Image(systemName: vm.isCorrect == true ? "checkmark" : "xmark")
                         .font(.body.weight(.bold))
-                        .foregroundStyle(vm.isCorrect == true ? .green : .red)
+                        .foregroundStyle(vm.isCorrect == true ? Pico.leafGreen : .red)
                 }
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(vm.isCorrect == true ? "Correct!" : "Not quite")
-                        .font(.headline)
+                        .font(.system(.headline, design: .rounded))
+                        .foregroundStyle(Pico.deepForestGreen)
                     if vm.isCorrect == false {
                         Text(vm.correctAnswer)
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(Theme.tangerine)
+                            .font(.system(.subheadline, design: .rounded, weight: .semibold))
+                            .foregroundStyle(Pico.terracotta)
                     }
                 }
 
@@ -417,16 +440,12 @@ struct PracticeView: View {
                 } label: {
                     Image(systemName: "speaker.wave.2.fill")
                         .font(.title3)
-                        .foregroundStyle(Theme.tangerine)
+                        .foregroundStyle(Pico.deepForestGreen)
                         .frame(width: 44, height: 44)
-                        .background(Theme.tangerine.opacity(0.1), in: Circle())
+                        .background(Pico.deepForestGreen.opacity(0.08), in: Circle())
                 }
             }
-            .padding(16)
-            .background(
-                (vm.isCorrect == true ? Color.green : Color.red).opacity(0.06),
-                in: .rect(cornerRadius: 16)
-            )
+            .picoCard()
 
             Button {
                 withAnimation(.spring(response: 0.3)) {
@@ -434,11 +453,11 @@ struct PracticeView: View {
                 }
             } label: {
                 Text(vm.currentIndex + 1 >= vm.practiceItems.count ? "See Results" : "Continue")
-                    .font(.headline)
+                    .font(.system(.headline, design: .rounded))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .frame(height: 52)
-                    .background(Theme.tangerineGradient, in: .rect(cornerRadius: 14))
+                    .background(Pico.primaryGradient, in: .rect(cornerRadius: 14))
             }
         }
     }
@@ -449,30 +468,31 @@ struct PracticeView: View {
 
             ZStack {
                 Circle()
-                    .fill(Theme.tangerine.opacity(0.08))
+                    .fill(Pico.leafGreen.opacity(0.08))
                     .frame(width: 120, height: 120)
                 Image(systemName: vm.totalCorrect > vm.practiceItems.count / 2 ? "star.fill" : "arrow.trianglehead.counterclockwise")
                     .font(.system(size: 52))
-                    .foregroundStyle(Theme.tangerine)
+                    .foregroundStyle(vm.totalCorrect > vm.practiceItems.count / 2 ? Pico.gold : Pico.deepForestGreen)
             }
 
             Text("Practice Complete!")
-                .font(.system(.title, design: .rounded, weight: .bold))
+                .font(.system(.title, design: .serif, weight: .bold))
+                .tracking(-0.3)
+                .foregroundStyle(Pico.deepForestGreen)
 
             VStack(spacing: 16) {
                 HStack(spacing: 24) {
-                    resultStat(value: "\(vm.totalCorrect)", label: "Correct", color: .green)
+                    resultStat(value: "\(vm.totalCorrect)", label: "Correct", color: Pico.leafGreen)
                     resultStat(value: "\(vm.totalAnswered - vm.totalCorrect)", label: "Incorrect", color: .red)
-                    resultStat(value: "\(vm.score)", label: "Score", color: Theme.tangerine)
+                    resultStat(value: "\(vm.score)", label: "Score", color: Pico.gold)
                 }
 
                 let pct = vm.totalAnswered > 0 ? Int(Double(vm.totalCorrect) / Double(vm.totalAnswered) * 100) : 0
                 Text("\(pct)% Accuracy")
-                    .font(.headline)
-                    .foregroundStyle(.secondary)
+                    .font(.system(.headline, design: .rounded))
+                    .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
             }
-            .padding(24)
-            .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: 20))
+            .picoCard()
 
             Spacer()
 
@@ -481,20 +501,20 @@ struct PracticeView: View {
                     withAnimation(.spring) { vm.startSession() }
                 } label: {
                     Text("Practice Again")
-                        .font(.headline)
+                        .font(.system(.headline, design: .rounded))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
-                        .background(Theme.tangerineGradient, in: .rect(cornerRadius: 16))
-                        .shadow(color: Theme.tangerine.opacity(0.3), radius: 8, y: 4)
+                        .background(Pico.primaryGradient, in: .rect(cornerRadius: 16))
+                        .shadow(color: Pico.deepForestGreen.opacity(0.2), radius: 8, y: 4)
                 }
 
                 Button {
                     withAnimation(.spring) { vm.resetSession() }
                 } label: {
                     Text("Change Settings")
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(Theme.tangerine)
+                        .font(.system(.subheadline, design: .rounded, weight: .medium))
+                        .foregroundStyle(Pico.deepForestGreen)
                 }
             }
             .padding(.horizontal, 24)
@@ -505,11 +525,11 @@ struct PracticeView: View {
     private func resultStat(value: String, label: String, color: Color) -> some View {
         VStack(spacing: 4) {
             Text(value)
-                .font(.title.weight(.bold))
+                .font(.system(.title, design: .rounded, weight: .bold))
                 .foregroundStyle(color)
             Text(label)
-                .font(.caption.weight(.medium))
-                .foregroundStyle(.secondary)
+                .font(.system(.caption, design: .rounded, weight: .medium))
+                .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
         }
         .frame(maxWidth: .infinity)
     }

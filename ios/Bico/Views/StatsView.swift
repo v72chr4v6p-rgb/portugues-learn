@@ -7,39 +7,76 @@ struct StatsView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 24) {
+                VStack(spacing: Pico.spacingL) {
                     overviewCards
                     streakSection
                     levelProgressSection
                 }
-                .padding(20)
+                .padding(.horizontal, Pico.spacingXL)
+                .padding(.vertical, Pico.spacingL)
             }
-            .background(Color(.systemGroupedBackground))
+            .background(Pico.plaster.ignoresSafeArea())
             .navigationTitle("Statistics")
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("Statistics")
+                        .font(.system(.headline, design: .serif, weight: .bold))
+                        .tracking(-0.3)
+                        .foregroundStyle(Pico.deepForestGreen)
+                }
+            }
         }
     }
 
     private var overviewCards: some View {
         LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
-            StatCard(icon: "checkmark.circle.fill", iconColor: .green, value: "\(progressService.completedLevelCount)", label: "Levels Done", total: "/ 43")
-            StatCard(icon: "percent", iconColor: Theme.tangerine, value: progressService.totalAttempts > 0 ? "\(Int(progressService.accuracy * 100))%" : "—", label: "Accuracy", total: nil)
-            StatCard(icon: "flame.fill", iconColor: .orange, value: "\(engagementService.dayStreak)", label: "Day Streak", total: nil)
-            StatCard(icon: "star.fill", iconColor: Theme.gold, value: "\(engagementService.xp)", label: "Total XP", total: nil)
+            picoStatCard(icon: "checkmark.circle.fill", iconColor: Pico.leafGreen, value: "\(progressService.completedLevelCount)", label: "Levels Done", total: "/ 43")
+            picoStatCard(icon: "percent", iconColor: Pico.terracotta, value: progressService.totalAttempts > 0 ? "\(Int(progressService.accuracy * 100))%" : "—", label: "Accuracy", total: nil)
+            picoStatCard(icon: "flame.fill", iconColor: .orange, value: "\(engagementService.dayStreak)", label: "Day Streak", total: nil)
+            picoStatCard(icon: "star.fill", iconColor: Pico.gold, value: "\(engagementService.xp)", label: "Total XP", total: nil)
         }
+    }
+
+    private func picoStatCard(icon: String, iconColor: Color, value: String, label: String, total: String?) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Image(systemName: icon)
+                .font(.title3)
+                .foregroundStyle(iconColor)
+
+            HStack(alignment: .firstTextBaseline, spacing: 2) {
+                Text(value)
+                    .font(.system(.title2, design: .rounded, weight: .bold))
+                    .foregroundStyle(Pico.deepForestGreen)
+                if let total {
+                    Text(total)
+                        .font(.system(.caption, design: .rounded))
+                        .foregroundStyle(Pico.deepForestGreen.opacity(0.4))
+                }
+            }
+
+            Text(label)
+                .font(.system(.caption, design: .rounded, weight: .medium))
+                .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .picoCard()
     }
 
     private var streakSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Streak Record")
-                .font(.headline)
+                .font(.system(.headline, design: .serif, weight: .bold))
+                .tracking(-0.3)
+                .foregroundStyle(Pico.deepForestGreen)
 
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Best Streak")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(.system(.subheadline, design: .rounded))
+                        .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
                     Text("\(engagementService.bestDayStreak) days in a row")
-                        .font(.title3.weight(.bold))
+                        .font(.system(.title3, design: .rounded, weight: .bold))
+                        .foregroundStyle(Pico.deepForestGreen)
                 }
 
                 Spacer()
@@ -50,24 +87,26 @@ struct StatsView: View {
                         LinearGradient(colors: [.orange, .red], startPoint: .bottom, endPoint: .top)
                     )
             }
-            .padding(16)
-            .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: 16))
+            .picoCard()
         }
     }
 
     private var levelProgressSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Level Progress")
-                .font(.headline)
+                .font(.system(.headline, design: .serif, weight: .bold))
+                .tracking(-0.3)
+                .foregroundStyle(Pico.deepForestGreen)
 
             ForEach(ForestZone.allCases, id: \.self) { zone in
                 VStack(alignment: .leading, spacing: 8) {
                     HStack(spacing: 6) {
                         Image(systemName: zone.icon)
                             .font(.caption)
-                            .foregroundStyle(Theme.sage)
+                            .foregroundStyle(Pico.leafGreen)
                         Text(zone.rawValue)
-                            .font(.subheadline.weight(.semibold))
+                            .font(.system(.subheadline, design: .rounded, weight: .semibold))
+                            .foregroundStyle(Pico.deepForestGreen)
                     }
 
                     let range = zone.levelRange
@@ -77,55 +116,21 @@ struct StatsView: View {
                     HStack(spacing: 8) {
                         GeometryReader { geo in
                             ZStack(alignment: .leading) {
-                                Capsule().fill(Color(.systemGray5))
-                                Capsule().fill(Theme.tangerineGradient)
+                                Capsule().fill(Pico.earthBrown.opacity(0.08))
+                                Capsule().fill(Pico.primaryGradient)
                                     .frame(width: total > 0 ? geo.size.width * CGFloat(completed) / CGFloat(total) : 0)
                             }
                         }
                         .frame(height: 8)
 
                         Text("\(completed)/\(total)")
-                            .font(.caption.weight(.semibold).monospacedDigit())
-                            .foregroundStyle(.secondary)
+                            .font(.system(.caption, design: .rounded, weight: .semibold).monospacedDigit())
+                            .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
                             .frame(width: 40, alignment: .trailing)
                     }
                 }
-                .padding(12)
-                .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: 12))
+                .picoCard()
             }
         }
-    }
-}
-
-struct StatCard: View {
-    let icon: String
-    let iconColor: Color
-    let value: String
-    let label: String
-    let total: String?
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Image(systemName: icon)
-                .font(.title3)
-                .foregroundStyle(iconColor)
-
-            HStack(alignment: .firstTextBaseline, spacing: 2) {
-                Text(value)
-                    .font(.title2.weight(.bold))
-                if let total {
-                    Text(total)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
-
-            Text(label)
-                .font(.caption.weight(.medium))
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(16)
-        .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: 16))
     }
 }

@@ -39,22 +39,53 @@ struct VerbExplorerView: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                filterRow
+            ScrollView {
+                VStack(spacing: 0) {
+                    filterRow
+                        .padding(.horizontal, Pico.spacingXL)
+                        .padding(.vertical, 12)
 
-                ForEach(filteredVerbs, id: \.infinitive) { verb in
-                    Button {
-                        selectedVerb = verb
-                        HapticService.selection()
-                    } label: {
-                        verbRow(verb)
+                    LazyVStack(spacing: 0) {
+                        ForEach(filteredVerbs, id: \.infinitive) { verb in
+                            Button {
+                                selectedVerb = verb
+                                HapticService.selection()
+                            } label: {
+                                verbRow(verb)
+                            }
+                            .buttonStyle(.plain)
+
+                            if verb.infinitive != filteredVerbs.last?.infinitive {
+                                Divider()
+                                    .padding(.leading, 20)
+                                    .foregroundStyle(Pico.earthBrown.opacity(0.08))
+                            }
+                        }
                     }
-                    .buttonStyle(.plain)
+                    .padding(.horizontal, Pico.spacingM)
+                    .background(
+                        RoundedRectangle(cornerRadius: Pico.cardRadius, style: .continuous)
+                            .fill(Pico.cardSurface)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: Pico.cardRadius, style: .continuous)
+                                    .strokeBorder(Pico.cardLightStroke, lineWidth: 1)
+                            )
+                    )
+                    .padding(.horizontal, Pico.spacingM)
                 }
+                .padding(.bottom, 120)
             }
-            .listStyle(.insetGrouped)
+            .background(Pico.plaster.ignoresSafeArea())
             .searchable(text: $searchText, prompt: "Search verbs...")
             .navigationTitle("Verb Explorer")
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("Verb Explorer")
+                        .font(.system(.headline, design: .serif, weight: .bold))
+                        .tracking(-0.3)
+                        .foregroundStyle(Pico.deepForestGreen)
+                }
+            }
             .sheet(item: $selectedVerb) { verb in
                 VerbDetailSheet(verb: verb, dialect: dialect)
                     .presentationDetents([.large])
@@ -69,26 +100,23 @@ struct VerbExplorerView: View {
     }
 
     private var filterRow: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
-                filterChip("All", isActive: filterIrregular == nil) { filterIrregular = nil }
-                filterChip("Regular", isActive: filterIrregular == false) { filterIrregular = false }
-                filterChip("Irregular", isActive: filterIrregular == true) { filterIrregular = true }
-            }
+        HStack(spacing: 8) {
+            filterChip("All", isActive: filterIrregular == nil) { filterIrregular = nil }
+            filterChip("Regular", isActive: filterIrregular == false) { filterIrregular = false }
+            filterChip("Irregular", isActive: filterIrregular == true) { filterIrregular = true }
+            Spacer()
         }
-        .listRowBackground(Color.clear)
-        .listRowInsets(EdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0))
     }
 
     private func filterChip(_ title: String, isActive: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(title)
-                .font(.subheadline.weight(.semibold))
+                .font(.system(.subheadline, design: .rounded, weight: .semibold))
                 .padding(.horizontal, 14)
                 .padding(.vertical, 8)
-                .background(isActive ? Theme.tangerine.opacity(0.15) : Color(.tertiarySystemBackground), in: Capsule())
-                .overlay(Capsule().strokeBorder(isActive ? Theme.tangerine : .clear, lineWidth: 1.5))
-                .foregroundStyle(isActive ? Theme.tangerine : .primary)
+                .background(isActive ? Pico.deepForestGreen.opacity(0.1) : Pico.cardSurface, in: Capsule())
+                .overlay(Capsule().strokeBorder(isActive ? Pico.deepForestGreen.opacity(0.3) : .clear, lineWidth: 1.5))
+                .foregroundStyle(isActive ? Pico.deepForestGreen : Pico.deepForestGreen.opacity(0.5))
         }
         .buttonStyle(.plain)
     }
@@ -98,21 +126,22 @@ struct VerbExplorerView: View {
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 8) {
                     Text(verb.infinitive)
-                        .font(.headline)
+                        .font(.system(.headline, design: .rounded))
+                        .foregroundStyle(Pico.deepForestGreen)
 
                     if verb.irregular {
                         Text("IRR")
-                            .font(.system(.caption2, weight: .bold))
+                            .font(.system(.caption2, design: .rounded, weight: .bold))
                             .foregroundStyle(.orange)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 2)
-                            .background(.orange.opacity(0.12), in: .rect(cornerRadius: 4))
+                            .background(.orange.opacity(0.1), in: .rect(cornerRadius: 4))
                     }
                 }
 
                 Text(verb.translation)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(.system(.subheadline, design: .rounded))
+                    .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
             }
 
             Spacer()
@@ -122,15 +151,17 @@ struct VerbExplorerView: View {
             } label: {
                 Image(systemName: "speaker.wave.2.fill")
                     .font(.subheadline)
-                    .foregroundStyle(Theme.tangerine)
+                    .foregroundStyle(Pico.deepForestGreen)
                     .frame(width: 36, height: 36)
-                    .background(Theme.tangerine.opacity(0.1), in: Circle())
+                    .background(Pico.deepForestGreen.opacity(0.06), in: Circle())
             }
 
             Image(systemName: "chevron.right")
                 .font(.caption2.weight(.semibold))
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(Pico.deepForestGreen.opacity(0.3))
         }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
     }
 }
 
@@ -161,6 +192,7 @@ struct VerbDetailSheet: View {
                 .padding(20)
                 .padding(.bottom, 40)
             }
+            .background(Pico.plaster.ignoresSafeArea())
             .navigationTitle(verb.infinitive)
             .navigationBarTitleDisplayMode(.inline)
         }
@@ -172,9 +204,10 @@ struct VerbDetailSheet: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(verb.infinitive)
                         .font(.system(.largeTitle, design: .rounded, weight: .bold))
+                        .foregroundStyle(Pico.deepForestGreen)
                     Text(verb.translation)
-                        .font(.title3)
-                        .foregroundStyle(.secondary)
+                        .font(.system(.title3, design: .rounded))
+                        .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
                 }
 
                 Spacer()
@@ -186,15 +219,15 @@ struct VerbDetailSheet: View {
                         .font(.title2)
                         .foregroundStyle(.white)
                         .frame(width: 56, height: 56)
-                        .background(Theme.tangerineGradient, in: Circle())
-                        .glowButton()
+                        .background(Pico.primaryGradient, in: Circle())
+                        .shadow(color: Pico.deepForestGreen.opacity(0.2), radius: 8, y: 4)
                 }
             }
 
             HStack(spacing: 8) {
                 if verb.irregular {
                     Label("Irregular", systemImage: "exclamationmark.triangle.fill")
-                        .font(.caption.weight(.semibold))
+                        .font(.system(.caption, design: .rounded, weight: .semibold))
                         .foregroundStyle(.orange)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 5)
@@ -202,11 +235,11 @@ struct VerbDetailSheet: View {
                 }
 
                 Text(verb.context)
-                    .font(.caption)
-                    .foregroundStyle(.tertiary)
+                    .font(.system(.caption, design: .rounded))
+                    .foregroundStyle(Pico.deepForestGreen.opacity(0.4))
                     .padding(.horizontal, 10)
                     .padding(.vertical, 5)
-                    .background(Color(.tertiarySystemBackground), in: Capsule())
+                    .background(Pico.cardSurface, in: Capsule())
 
                 Spacer()
             }
@@ -216,8 +249,8 @@ struct VerbDetailSheet: View {
     private var speedControl: some View {
         HStack(spacing: 8) {
             Text("Speed")
-                .font(.subheadline.weight(.medium))
-                .foregroundStyle(.secondary)
+                .font(.system(.subheadline, design: .rounded, weight: .medium))
+                .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
 
             Spacer()
 
@@ -231,27 +264,28 @@ struct VerbDetailSheet: View {
                         Image(systemName: speed.icon)
                             .font(.caption2)
                         Text(speed.rawValue)
-                            .font(.caption.weight(.semibold))
+                            .font(.system(.caption, design: .rounded, weight: .semibold))
                     }
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
                     .background(
-                        selectedSpeed == speed ? Theme.tangerine.opacity(0.15) : Color(.tertiarySystemBackground),
+                        selectedSpeed == speed ? Pico.deepForestGreen.opacity(0.1) : Pico.cardSurface,
                         in: Capsule()
                     )
-                    .foregroundStyle(selectedSpeed == speed ? Theme.tangerine : .primary)
+                    .foregroundStyle(selectedSpeed == speed ? Pico.deepForestGreen : Pico.deepForestGreen.opacity(0.5))
                 }
                 .buttonStyle(.plain)
             }
         }
-        .padding(14)
-        .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: 14))
+        .picoCard()
     }
 
     private var conjugationSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Conjugation")
-                .font(.headline)
+                .font(.system(.headline, design: .serif, weight: .bold))
+                .tracking(-0.3)
+                .foregroundStyle(Pico.deepForestGreen)
 
             let conjugations = verb.conjugations.forDialect(dialect)
             VStack(spacing: 0) {
@@ -259,12 +293,13 @@ struct VerbDetailSheet: View {
                     let pronoun = Pronoun(rawValue: pair.key)
                     HStack {
                         Text(pronoun?.displayName ?? pair.key)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .font(.system(.subheadline, design: .rounded))
+                            .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
                             .frame(width: 90, alignment: .trailing)
 
                         Text(pair.value)
-                            .font(.body.weight(.semibold))
+                            .font(.system(.body, design: .rounded, weight: .semibold))
+                            .foregroundStyle(Pico.deepForestGreen)
 
                         Spacer()
 
@@ -273,37 +308,49 @@ struct VerbDetailSheet: View {
                         } label: {
                             Image(systemName: "speaker.wave.1.fill")
                                 .font(.caption)
-                                .foregroundStyle(Theme.tangerine)
+                                .foregroundStyle(Pico.deepForestGreen.opacity(0.4))
                                 .frame(width: 32, height: 32)
-                                .background(Theme.tangerine.opacity(0.08), in: Circle())
+                                .background(Pico.deepForestGreen.opacity(0.06), in: Circle())
                         }
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 12)
 
                     if index < conjugations.count - 1 {
-                        Divider().padding(.leading, 106)
+                        Divider()
+                            .padding(.leading, 106)
+                            .foregroundStyle(Pico.earthBrown.opacity(0.08))
                     }
                 }
             }
-            .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: 14))
+            .background(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(Pico.cardSurface)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .strokeBorder(Pico.cardLightStroke, lineWidth: 1)
+                    )
+            )
         }
     }
 
     private var examplesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Examples")
-                .font(.headline)
+                .font(.system(.headline, design: .serif, weight: .bold))
+                .tracking(-0.3)
+                .foregroundStyle(Pico.deepForestGreen)
 
             ForEach(exampleSet.examples) { example in
                 VStack(alignment: .leading, spacing: 6) {
                     HStack(alignment: .top) {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(example.portuguese)
-                                .font(.body.weight(.medium))
+                                .font(.system(.body, design: .rounded, weight: .medium))
+                                .foregroundStyle(Pico.deepForestGreen)
                             Text(example.english)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                                .font(.system(.subheadline, design: .rounded))
+                                .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
                         }
 
                         Spacer()
@@ -313,14 +360,13 @@ struct VerbDetailSheet: View {
                         } label: {
                             Image(systemName: "speaker.wave.2.fill")
                                 .font(.caption)
-                                .foregroundStyle(Theme.tangerine)
+                                .foregroundStyle(Pico.deepForestGreen)
                                 .frame(width: 32, height: 32)
-                                .background(Theme.tangerine.opacity(0.08), in: Circle())
+                                .background(Pico.deepForestGreen.opacity(0.06), in: Circle())
                         }
                     }
                 }
-                .padding(14)
-                .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: 12))
+                .picoCard()
             }
         }
     }
@@ -332,24 +378,25 @@ struct VerbDetailSheet: View {
                     .font(.caption)
                     .foregroundStyle(.red)
                 Text("Common Mistake")
-                    .font(.subheadline.weight(.bold))
+                    .font(.system(.subheadline, design: .rounded, weight: .bold))
                     .foregroundStyle(.red)
             }
 
             Text(exampleSet.commonMistake)
-                .font(.subheadline.weight(.medium))
+                .font(.system(.subheadline, design: .rounded, weight: .medium))
+                .foregroundStyle(Pico.deepForestGreen)
 
             Text(exampleSet.mistakeExplanation)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .font(.system(.caption, design: .rounded))
+                .foregroundStyle(Pico.deepForestGreen.opacity(0.6))
                 .lineSpacing(2)
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.red.opacity(0.06), in: .rect(cornerRadius: 14))
+        .background(Color.red.opacity(0.04), in: .rect(cornerRadius: 14))
         .overlay(
             RoundedRectangle(cornerRadius: 14)
-                .strokeBorder(Color.red.opacity(0.15), lineWidth: 1)
+                .strokeBorder(Color.red.opacity(0.12), lineWidth: 1)
         )
     }
 }

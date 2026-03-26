@@ -17,7 +17,7 @@ struct QuickReviewView: View {
 
     var body: some View {
         ZStack {
-            Color(.systemBackground).ignoresSafeArea()
+            Pico.plaster.ignoresSafeArea()
 
             if isComplete {
                 completionView
@@ -36,8 +36,8 @@ struct QuickReviewView: View {
         VStack(spacing: 0) {
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
-                    Capsule().fill(Color(.systemGray5)).frame(height: 6)
-                    Capsule().fill(Theme.tangerineGradient)
+                    Capsule().fill(Pico.earthBrown.opacity(0.08)).frame(height: 6)
+                    Capsule().fill(Pico.primaryGradient)
                         .frame(width: items.isEmpty ? 0 : geo.size.width * CGFloat(currentIndex) / CGFloat(items.count), height: 6)
                         .animation(.spring, value: currentIndex)
                 }
@@ -48,12 +48,13 @@ struct QuickReviewView: View {
 
             HStack {
                 Text("\(currentIndex + 1)/\(items.count)")
-                    .font(.caption.weight(.semibold).monospacedDigit())
-                    .foregroundStyle(.secondary)
+                    .font(.system(.caption, design: .rounded, weight: .semibold).monospacedDigit())
+                    .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
                 Spacer()
                 HStack(spacing: 4) {
-                    Image(systemName: "star.fill").font(.caption).foregroundStyle(Theme.gold)
-                    Text("\(score)").font(.caption.weight(.bold).monospacedDigit())
+                    Image(systemName: "star.fill").font(.caption).foregroundStyle(Pico.gold)
+                    Text("\(score)").font(.system(.caption, design: .rounded, weight: .bold).monospacedDigit())
+                        .foregroundStyle(Pico.deepForestGreen)
                 }
             }
             .padding(.horizontal, 20)
@@ -65,31 +66,32 @@ struct QuickReviewView: View {
                 let item = items[currentIndex]
                 VStack(spacing: 16) {
                     Text(item.2)
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(Theme.tangerine)
+                        .font(.system(.caption, design: .rounded, weight: .bold))
+                        .foregroundStyle(Pico.deepForestGreen)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 4)
-                        .background(Theme.tangerine.opacity(0.1), in: Capsule())
+                        .background(Pico.deepForestGreen.opacity(0.08), in: Capsule())
 
                     Text(item.1.displayName)
-                        .font(.title3.weight(.medium))
-                        .foregroundStyle(.secondary)
+                        .font(.system(.title3, design: .rounded, weight: .medium))
+                        .foregroundStyle(Pico.deepForestGreen.opacity(0.6))
 
                     Text(item.0.infinitive)
                         .font(.system(size: 34, weight: .bold, design: .rounded))
+                        .foregroundStyle(Pico.deepForestGreen)
 
                     Text(item.0.translation)
-                        .font(.subheadline)
-                        .foregroundStyle(.tertiary)
+                        .font(.system(.subheadline, design: .rounded))
+                        .foregroundStyle(Pico.deepForestGreen.opacity(0.4))
 
                     Button {
                         speechService.speak(item.0.infinitive, dialect: dialect)
                     } label: {
                         Image(systemName: "speaker.wave.2.fill")
                             .font(.body)
-                            .foregroundStyle(Theme.tangerine)
+                            .foregroundStyle(Pico.deepForestGreen)
                             .frame(width: 40, height: 40)
-                            .background(Theme.tangerine.opacity(0.1), in: Circle())
+                            .background(Pico.deepForestGreen.opacity(0.08), in: Circle())
                     }
                 }
             }
@@ -98,10 +100,10 @@ struct QuickReviewView: View {
 
             VStack(spacing: 12) {
                 TextField("Type the conjugation...", text: $userAnswer)
-                    .font(.title3)
+                    .font(.system(.title3, design: .rounded))
                     .multilineTextAlignment(.center)
                     .padding(16)
-                    .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: 14))
+                    .background(Pico.cardSurface, in: .rect(cornerRadius: 14))
                     .autocorrectionDisabled()
                     .textInputAutocapitalization(.never)
                     .padding(.horizontal, 20)
@@ -110,15 +112,16 @@ struct QuickReviewView: View {
 
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 6) {
-                        ForEach(Theme.portugueseChars, id: \.self) { char in
+                        ForEach(Pico.portugueseChars, id: \.self) { char in
                             Button {
                                 userAnswer += char
                                 HapticService.lightTap()
                             } label: {
                                 Text(char)
                                     .font(.system(.body, design: .rounded, weight: .medium))
+                                    .foregroundStyle(Pico.deepForestGreen)
                                     .frame(width: 38, height: 38)
-                                    .background(Color(.tertiarySystemBackground), in: .rect(cornerRadius: 8))
+                                    .background(Pico.cardSurface, in: .rect(cornerRadius: 8))
                             }
                             .buttonStyle(.plain)
                             .disabled(showResult)
@@ -134,14 +137,14 @@ struct QuickReviewView: View {
                         checkAnswer()
                     } label: {
                         Text("Check")
-                            .font(.headline)
+                            .font(.system(.headline, design: .rounded))
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                             .frame(height: 52)
                             .background(
                                 userAnswer.isEmpty
-                                ? AnyShapeStyle(Color(.systemGray4))
-                                : AnyShapeStyle(Theme.tangerineGradient),
+                                ? AnyShapeStyle(Pico.earthBrown.opacity(0.2))
+                                : AnyShapeStyle(Pico.primaryGradient),
                                 in: .rect(cornerRadius: 14)
                             )
                     }
@@ -159,31 +162,31 @@ struct QuickReviewView: View {
             HStack(spacing: 12) {
                 Image(systemName: isCorrect ? "checkmark.circle.fill" : "xmark.circle.fill")
                     .font(.title2)
-                    .foregroundStyle(isCorrect ? .green : .red)
+                    .foregroundStyle(isCorrect ? Pico.leafGreen : .red)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(isCorrect ? "Correct!" : "Not quite")
-                        .font(.headline)
+                        .font(.system(.headline, design: .rounded))
+                        .foregroundStyle(Pico.deepForestGreen)
                     if !isCorrect && currentIndex < items.count {
                         Text(items[currentIndex].0.conjugation(for: items[currentIndex].1, dialect: dialect) ?? "")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(Theme.tangerine)
+                            .font(.system(.subheadline, design: .rounded, weight: .semibold))
+                            .foregroundStyle(Pico.terracotta)
                     }
                 }
                 Spacer()
             }
-            .padding(14)
-            .background((isCorrect ? Color.green : Color.red).opacity(0.06), in: .rect(cornerRadius: 14))
+            .picoCard()
 
             Button {
                 advance()
             } label: {
                 Text(currentIndex + 1 >= items.count ? "Finish" : "Continue")
-                    .font(.headline)
+                    .font(.system(.headline, design: .rounded))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .frame(height: 52)
-                    .background(Theme.tangerineGradient, in: .rect(cornerRadius: 14))
+                    .background(Pico.primaryGradient, in: .rect(cornerRadius: 14))
             }
         }
         .padding(.horizontal, 20)
@@ -195,15 +198,17 @@ struct QuickReviewView: View {
             Spacer()
             Image(systemName: "sparkles")
                 .font(.system(size: 56))
-                .foregroundStyle(Theme.tangerine)
+                .foregroundStyle(Pico.gold)
                 .symbolEffect(.bounce, value: isComplete)
 
             Text("Quick Review Done!")
-                .font(.system(.title, design: .rounded, weight: .bold))
+                .font(.system(.title, design: .serif, weight: .bold))
+                .tracking(-0.3)
+                .foregroundStyle(Pico.deepForestGreen)
 
             Text("+\(score) XP")
-                .font(.title2.weight(.bold))
-                .foregroundStyle(Theme.gold)
+                .font(.system(.title2, design: .rounded, weight: .bold))
+                .foregroundStyle(Pico.gold)
 
             Spacer()
 
@@ -211,11 +216,11 @@ struct QuickReviewView: View {
                 dismiss()
             } label: {
                 Text("Done")
-                    .font(.headline)
+                    .font(.system(.headline, design: .rounded))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .frame(height: 56)
-                    .background(Theme.tangerineGradient, in: .rect(cornerRadius: 16))
+                    .background(Pico.primaryGradient, in: .rect(cornerRadius: 16))
             }
             .padding(.horizontal, 24)
             .padding(.bottom, 40)
