@@ -1,0 +1,42 @@
+import Foundation
+
+extension VerbDataService {
+    static func buildLevels5to8() -> [Level] {
+        let l5 = Level(level: 5, tense: "Presente", verbs: [
+            Verb(infinitive: "Estudar", translation: "To study", irregular: false, context: "Education and learning", conjugations: .init(br: ["eu": "estudo", "voce": "estuda", "nos": "estudamos", "voces": "estudam", "eles": "estudam"], pt: ["eu": "estudo", "tu": "estudas", "ele": "estuda", "nos": "estudamos", "vos": "estudais", "eles": "estudam"]), level: 5),
+            Verb(infinitive: "Gostar", translation: "To like", irregular: false, context: "Preferences and enjoyment", conjugations: .init(br: ["eu": "gosto", "voce": "gosta", "nos": "gostamos", "voces": "gostam", "eles": "gostam"], pt: ["eu": "gosto", "tu": "gostas", "ele": "gosta", "nos": "gostamos", "vos": "gostais", "eles": "gostam"]), level: 5),
+            Verb(infinitive: "Precisar", translation: "To need", irregular: false, context: "Necessities", conjugations: .init(br: ["eu": "preciso", "voce": "precisa", "nos": "precisamos", "voces": "precisam", "eles": "precisam"], pt: ["eu": "preciso", "tu": "precisas", "ele": "precisa", "nos": "precisamos", "vos": "precisais", "eles": "precisam"]), level: 5),
+            Verb(infinitive: "Comprar", translation: "To buy", irregular: false, context: "Shopping and transactions", conjugations: .init(br: ["eu": "compro", "voce": "compra", "nos": "compramos", "voces": "compram", "eles": "compram"], pt: ["eu": "compro", "tu": "compras", "ele": "compra", "nos": "compramos", "vos": "comprais", "eles": "compram"]), level: 5),
+            Verb(infinitive: "Ajudar", translation: "To help", irregular: false, context: "Assistance", conjugations: .init(br: ["eu": "ajudo", "voce": "ajuda", "nos": "ajudamos", "voces": "ajudam", "eles": "ajudam"], pt: ["eu": "ajudo", "tu": "ajudas", "ele": "ajuda", "nos": "ajudamos", "vos": "ajudais", "eles": "ajudam"]), level: 5),
+            Verb(infinitive: "Pagar", translation: "To pay", irregular: false, context: "Transactions", conjugations: .init(br: ["eu": "pago", "voce": "paga", "nos": "pagamos", "voces": "pagam", "eles": "pagam"], pt: ["eu": "pago", "tu": "pagas", "ele": "paga", "nos": "pagamos", "vos": "pagais", "eles": "pagam"]), level: 5)
+        ])
+
+        let l6 = Level(level: 6, tense: "Presente", verbs: [
+            Verb(infinitive: "Abrir", translation: "To open", irregular: false, context: "Opening things", conjugations: .init(br: ["eu": "abro", "voce": "abre", "nos": "abrimos", "voces": "abrem", "eles": "abrem"], pt: ["eu": "abro", "tu": "abres", "ele": "abre", "nos": "abrimos", "vos": "abris", "eles": "abrem"]), level: 6),
+            Verb(infinitive: "Escrever", translation: "To write", irregular: false, context: "Writing and communication", conjugations: .init(br: ["eu": "escrevo", "voce": "escreve", "nos": "escrevemos", "voces": "escrevem", "eles": "escrevem"], pt: ["eu": "escrevo", "tu": "escreves", "ele": "escreve", "nos": "escrevemos", "vos": "escreveis", "eles": "escrevem"]), level: 6),
+            Verb(infinitive: "Beber", translation: "To drink", irregular: false, context: "Drinking beverages", conjugations: .init(br: ["eu": "bebo", "voce": "bebe", "nos": "bebemos", "voces": "bebem", "eles": "bebem"], pt: ["eu": "bebo", "tu": "bebes", "ele": "bebe", "nos": "bebemos", "vos": "bebeis", "eles": "bebem"]), level: 6),
+            Verb(infinitive: "Partir", translation: "To leave/depart", irregular: false, context: "Departures and travel", conjugations: .init(br: ["eu": "parto", "voce": "parte", "nos": "partimos", "voces": "partem", "eles": "partem"], pt: ["eu": "parto", "tu": "partes", "ele": "parte", "nos": "partimos", "vos": "partis", "eles": "partem"]), level: 6),
+            Verb(infinitive: "Vender", translation: "To sell", irregular: false, context: "Commerce", conjugations: .init(br: ["eu": "vendo", "voce": "vende", "nos": "vendemos", "voces": "vendem", "eles": "vendem"], pt: ["eu": "vendo", "tu": "vendes", "ele": "vende", "nos": "vendemos", "vos": "vendeis", "eles": "vendem"]), level: 6),
+            Verb(infinitive: "Decidir", translation: "To decide", irregular: false, context: "Making decisions", conjugations: .init(br: ["eu": "decido", "voce": "decide", "nos": "decidimos", "voces": "decidem", "eles": "decidem"], pt: ["eu": "decido", "tu": "decides", "ele": "decide", "nos": "decidimos", "vos": "decidis", "eles": "decidem"]), level: 6)
+        ])
+
+        let l7 = Level(level: 7, tense: "Presente", verbs: [
+            Verb(infinitive: "Pensar", translation: "To think", irregular: false, context: "Thoughts and opinions", conjugations: .init(br: ["eu": "penso", "voce": "pensa", "nos": "pensamos", "voces": "pensam", "eles": "pensam"], pt: ["eu": "penso", "tu": "pensas", "ele": "pensa", "nos": "pensamos", "vos": "pensais", "eles": "pensam"]), level: 7),
+            Verb(infinitive: "Sentir", translation: "To feel", irregular: true, context: "Emotions and senses", conjugations: .init(br: ["eu": "sinto", "voce": "sente", "nos": "sentimos", "voces": "sentem", "eles": "sentem"], pt: ["eu": "sinto", "tu": "sentes", "ele": "sente", "nos": "sentimos", "vos": "sentis", "eles": "sentem"]), level: 7),
+            Verb(infinitive: "Acreditar", translation: "To believe", irregular: false, context: "Beliefs and faith", conjugations: .init(br: ["eu": "acredito", "voce": "acredita", "nos": "acreditamos", "voces": "acreditam", "eles": "acreditam"], pt: ["eu": "acredito", "tu": "acreditas", "ele": "acredita", "nos": "acreditamos", "vos": "acreditais", "eles": "acreditam"]), level: 7),
+            Verb(infinitive: "Lembrar", translation: "To remember", irregular: false, context: "Memory", conjugations: .init(br: ["eu": "lembro", "voce": "lembra", "nos": "lembramos", "voces": "lembram", "eles": "lembram"], pt: ["eu": "lembro", "tu": "lembras", "ele": "lembra", "nos": "lembramos", "vos": "lembrais", "eles": "lembram"]), level: 7),
+            Verb(infinitive: "Esquecer", translation: "To forget", irregular: false, context: "Forgetting", conjugations: .init(br: ["eu": "esqueço", "voce": "esquece", "nos": "esquecemos", "voces": "esquecem", "eles": "esquecem"], pt: ["eu": "esqueço", "tu": "esqueces", "ele": "esquece", "nos": "esquecemos", "vos": "esqueceis", "eles": "esquecem"]), level: 7)
+        ])
+
+        let l8 = Level(level: 8, tense: "Presente", verbs: [
+            Verb(infinitive: "Dormir", translation: "To sleep", irregular: true, context: "Rest and sleep", conjugations: .init(br: ["eu": "durmo", "voce": "dorme", "nos": "dormimos", "voces": "dormem", "eles": "dormem"], pt: ["eu": "durmo", "tu": "dormes", "ele": "dorme", "nos": "dormimos", "vos": "dormis", "eles": "dormem"]), level: 8),
+            Verb(infinitive: "Acordar", translation: "To wake up", irregular: false, context: "Morning routine", conjugations: .init(br: ["eu": "acordo", "voce": "acorda", "nos": "acordamos", "voces": "acordam", "eles": "acordam"], pt: ["eu": "acordo", "tu": "acordas", "ele": "acorda", "nos": "acordamos", "vos": "acordais", "eles": "acordam"]), level: 8),
+            Verb(infinitive: "Tomar", translation: "To take/have", irregular: false, context: "Meals and showers", conjugations: .init(br: ["eu": "tomo", "voce": "toma", "nos": "tomamos", "voces": "tomam", "eles": "tomam"], pt: ["eu": "tomo", "tu": "tomas", "ele": "toma", "nos": "tomamos", "vos": "tomais", "eles": "tomam"]), level: 8),
+            Verb(infinitive: "Sair", translation: "To leave/go out", irregular: true, context: "Going out", conjugations: .init(br: ["eu": "saio", "voce": "sai", "nos": "saímos", "voces": "saem", "eles": "saem"], pt: ["eu": "saio", "tu": "sais", "ele": "sai", "nos": "saímos", "vos": "saís", "eles": "saem"]), level: 8),
+            Verb(infinitive: "Chegar", translation: "To arrive", irregular: false, context: "Arrival", conjugations: .init(br: ["eu": "chego", "voce": "chega", "nos": "chegamos", "voces": "chegam", "eles": "chegam"], pt: ["eu": "chego", "tu": "chegas", "ele": "chega", "nos": "chegamos", "vos": "chegais", "eles": "chegam"]), level: 8),
+            Verb(infinitive: "Voltar", translation: "To return", irregular: false, context: "Coming back", conjugations: .init(br: ["eu": "volto", "voce": "volta", "nos": "voltamos", "voces": "voltam", "eles": "voltam"], pt: ["eu": "volto", "tu": "voltas", "ele": "volta", "nos": "voltamos", "vos": "voltais", "eles": "voltam"]), level: 8)
+        ])
+
+        return [l5, l6, l7, l8]
+    }
+}
