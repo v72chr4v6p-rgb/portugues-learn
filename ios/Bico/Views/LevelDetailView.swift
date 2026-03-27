@@ -9,6 +9,8 @@ struct LevelDetailView: View {
     @Environment(EngagementService.self) private var engagementService
     @State private var selectedLessonIndex: Int?
     @State private var quizConfig: QuizConfig?
+    @State private var selectedGameMode: GameMode = .speedTap
+    @State private var useTimer: Bool = false
 
     private var lessons: [LessonPage] {
         LessonContentService.lessons(for: level, dialect: dialect)
@@ -280,6 +282,9 @@ struct LevelDetailView: View {
             }
             .padding(.horizontal, 16)
 
+            gameModeSelector
+                .padding(.horizontal, 16)
+
             LazyVGrid(columns: [
                 GridItem(.flexible(), spacing: 16),
                 GridItem(.flexible(), spacing: 16),
@@ -356,14 +361,70 @@ struct LevelDetailView: View {
         }
     }
 
+    private var gameModeSelector: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Mode")
+                .font(.system(.subheadline, design: .serif, weight: .bold))
+                .tracking(-0.3)
+                .foregroundStyle(Pico.deepForestGreen.opacity(0.6))
+
+            HStack(spacing: 10) {
+                ForEach(GameMode.allCases, id: \.self) { mode in
+                    Button {
+                        selectedGameMode = mode
+                        HapticService.selection()
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: mode.icon)
+                                .font(.subheadline)
+                            Text(mode.rawValue)
+                                .font(.system(.caption, design: .rounded, weight: .semibold))
+                        }
+                        .foregroundStyle(selectedGameMode == mode ? Pico.deepForestGreen : Pico.deepForestGreen.opacity(0.5))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(
+                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                .fill(selectedGameMode == mode ? Pico.deepForestGreen.opacity(0.1) : Pico.cardSurface)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                        .strokeBorder(
+                                            selectedGameMode == mode ? AnyShapeStyle(Pico.deepForestGreen.opacity(0.3)) : AnyShapeStyle(Pico.cardLightStroke),
+                                            lineWidth: 1
+                                        )
+                                )
+                        )
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+
+            Button {
+                useTimer.toggle()
+                HapticService.selection()
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: useTimer ? "checkmark.square.fill" : "square")
+                        .font(.body)
+                        .foregroundStyle(useTimer ? Pico.leafGreen : Pico.deepForestGreen.opacity(0.3))
+                    Text("Timed mode (30s per question)")
+                        .font(.system(.caption, design: .rounded, weight: .medium))
+                        .foregroundStyle(Pico.deepForestGreen.opacity(0.6))
+                    Spacer()
+                }
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
     private var startAllButton: some View {
         Button {
             HapticService.heavyTap()
             let config = QuizConfig(
                 level: level,
                 pronouns: Set(pronouns),
-                gameMode: .zenTyping,
-                useTimer: false
+                gameMode: selectedGameMode,
+                useTimer: useTimer
             )
             quizConfig = config
         } label: {
@@ -410,8 +471,8 @@ struct LevelDetailView: View {
         let config = QuizConfig(
             level: level,
             pronouns: selectedPronouns,
-            gameMode: .zenTyping,
-            useTimer: false
+            gameMode: selectedGameMode,
+            useTimer: useTimer
         )
         quizConfig = config
     }

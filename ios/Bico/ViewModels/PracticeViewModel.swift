@@ -99,12 +99,29 @@ class PracticeViewModel {
         var options = Set<String>()
         options.insert(correctAnswer)
 
-        let allAnswers = practiceItems.map(\.answer)
-        while options.count < min(4, allAnswers.count) {
-            if let random = allAnswers.randomElement() {
-                options.insert(random)
+        if let item = currentItem {
+            let sameVerbConjugations = item.verb.conjugations.forDialect(dialect)
+                .values
+                .filter { $0 != "\u{2014}" && $0.lowercased() != correctAnswer.lowercased() }
+
+            for conj in sameVerbConjugations.shuffled() {
+                if options.count >= 4 { break }
+                options.insert(conj)
             }
         }
+
+        if options.count < 4 {
+            let otherAnswers = practiceItems
+                .filter { $0.verb.infinitive != currentItem?.verb.infinitive }
+                .map(\.answer)
+                .filter { !options.contains($0) }
+
+            for answer in otherAnswers.shuffled() {
+                if options.count >= 4 { break }
+                options.insert(answer)
+            }
+        }
+
         multipleChoiceOptions = Array(options).shuffled()
     }
 

@@ -84,17 +84,37 @@ class QuizViewModel {
         var options = Set<String>()
         options.insert(correctAnswer)
 
-        let allConjugations = level.verbs.flatMap { verb in
-            selectedPronouns.compactMap { verb.conjugation(for: $0, dialect: dialect) }
+        guard let currentVerb = currentVerb else {
+            multipleChoiceOptions = [correctAnswer]
+            return
         }
 
-        while options.count < min(4, allConjugations.count + 1) {
-            if let random = allConjugations.randomElement() {
-                options.insert(random)
-            } else {
-                break
+        let sameVerbConjugations = dialect.pronouns.compactMap { pronoun -> String? in
+            guard let conj = currentVerb.conjugation(for: pronoun, dialect: dialect),
+                  conj != "—",
+                  conj.lowercased() != correctAnswer.lowercased() else { return nil }
+            return conj
+        }
+
+        for conj in sameVerbConjugations.shuffled() {
+            if options.count >= 4 { break }
+            options.insert(conj)
+        }
+
+        if options.count < 4 {
+            let otherConjugations = level.verbs
+                .filter { $0.infinitive != currentVerb.infinitive }
+                .flatMap { verb in
+                    selectedPronouns.compactMap { verb.conjugation(for: $0, dialect: dialect) }
+                }
+                .filter { $0 != "—" && !options.contains($0) }
+
+            for conj in otherConjugations.shuffled() {
+                if options.count >= 4 { break }
+                options.insert(conj)
             }
         }
+
         multipleChoiceOptions = Array(options).shuffled()
     }
 

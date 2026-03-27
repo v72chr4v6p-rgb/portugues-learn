@@ -18,7 +18,7 @@ struct QuizView: View {
 
     var body: some View {
         ZStack {
-            Color(.systemBackground).ignoresSafeArea()
+            Pico.plaster.ignoresSafeArea()
 
             if viewModel.isComplete {
                 completionView
@@ -80,11 +80,11 @@ struct QuizView: View {
         GeometryReader { geo in
             ZStack(alignment: .leading) {
                 Capsule()
-                    .fill(Color(.systemGray5))
+                    .fill(Pico.earthBrown.opacity(0.08))
                     .frame(height: 8)
 
                 Capsule()
-                    .fill(Theme.tangerineGradient)
+                    .fill(Pico.primaryGradient)
                     .frame(
                         width: viewModel.totalQuestions > 0
                             ? geo.size.width * CGFloat(viewModel.questionsAnswered) / CGFloat(viewModel.totalQuestions)
@@ -101,17 +101,17 @@ struct QuizView: View {
         HStack(spacing: 6) {
             Image(systemName: "timer")
                 .font(.caption)
-                .foregroundStyle(viewModel.timeRemaining <= 10 ? .red : Theme.tangerine)
+                .foregroundStyle(viewModel.timeRemaining <= 10 ? .red : Pico.terracotta)
             Text("\(viewModel.timeRemaining)s")
-                .font(.headline.monospacedDigit())
-                .foregroundStyle(viewModel.timeRemaining <= 10 ? .red : .primary)
+                .font(.system(.headline, design: .rounded).monospacedDigit())
+                .foregroundStyle(viewModel.timeRemaining <= 10 ? .red : Pico.deepForestGreen)
                 .contentTransition(.numericText())
                 .animation(.spring, value: viewModel.timeRemaining)
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 6)
         .background(
-            (viewModel.timeRemaining <= 10 ? Color.red : Theme.tangerine).opacity(0.08),
+            (viewModel.timeRemaining <= 10 ? Color.red : Pico.terracotta).opacity(0.08),
             in: Capsule()
         )
     }
@@ -136,31 +136,32 @@ struct QuizView: View {
     private func verbPrompt(verb: Verb) -> some View {
         VStack(spacing: 18) {
             Text(viewModel.currentPronoun.displayName)
-                .font(.title3.weight(.medium))
-                .foregroundStyle(.secondary)
+                .font(.system(.title3, design: .rounded, weight: .medium))
+                .foregroundStyle(Pico.deepForestGreen.opacity(0.6))
 
             Text(verb.infinitive)
                 .font(.system(size: 38, weight: .bold, design: .rounded))
+                .foregroundStyle(Pico.deepForestGreen)
 
             HStack(spacing: 10) {
                 Text(verb.translation)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(.system(.subheadline, design: .rounded))
+                    .foregroundStyle(Pico.deepForestGreen.opacity(0.4))
 
                 Button {
                     viewModel.speak(verb.infinitive)
                 } label: {
                     Image(systemName: "speaker.wave.2.fill")
                         .font(.body)
-                        .foregroundStyle(Theme.tangerine)
+                        .foregroundStyle(Pico.deepForestGreen)
                         .frame(width: 36, height: 36)
-                        .background(Theme.tangerine.opacity(0.1), in: Circle())
+                        .background(Pico.deepForestGreen.opacity(0.08), in: Circle())
                 }
             }
 
             if verb.irregular {
                 Text("Irregular")
-                    .font(.caption.weight(.bold))
+                    .font(.system(.caption, design: .rounded, weight: .bold))
                     .foregroundStyle(.orange)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 4)
@@ -168,8 +169,8 @@ struct QuizView: View {
             }
 
             Text(viewModel.level.tense)
-                .font(.caption.weight(.medium))
-                .foregroundStyle(.tertiary)
+                .font(.system(.caption, design: .rounded, weight: .medium))
+                .foregroundStyle(Pico.deepForestGreen.opacity(0.3))
         }
         .padding(.horizontal, 20)
     }
@@ -177,10 +178,10 @@ struct QuizView: View {
     private var typingInput: some View {
         VStack(spacing: 12) {
             TextField("Type the conjugation...", text: Bindable(viewModel).userAnswer)
-                .font(.title3)
+                .font(.system(.title3, design: .rounded))
                 .multilineTextAlignment(.center)
                 .padding(16)
-                .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: 14))
+                .background(Pico.cardSurface, in: .rect(cornerRadius: 14))
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
                 .padding(.horizontal, 20)
@@ -198,14 +199,14 @@ struct QuizView: View {
                     submitCurrentAnswer()
                 } label: {
                     Text("Check")
-                        .font(.headline)
+                        .font(.system(.headline, design: .rounded))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 52)
                         .background(
                             viewModel.userAnswer.isEmpty
-                                ? AnyShapeStyle(Color(.systemGray4))
-                                : AnyShapeStyle(Theme.tangerineGradient),
+                                ? AnyShapeStyle(Pico.earthBrown.opacity(0.2))
+                                : AnyShapeStyle(Pico.primaryGradient),
                             in: .rect(cornerRadius: 14)
                         )
                 }
@@ -225,8 +226,9 @@ struct QuizView: View {
                     } label: {
                         Text(char)
                             .font(.system(.body, design: .rounded, weight: .medium))
+                            .foregroundStyle(Pico.deepForestGreen)
                             .frame(width: 38, height: 38)
-                            .background(Color(.tertiarySystemBackground), in: .rect(cornerRadius: 8))
+                            .background(Pico.cardSurface, in: .rect(cornerRadius: 8))
                     }
                     .buttonStyle(.plain)
                     .disabled(viewModel.showingResult)
@@ -275,29 +277,29 @@ struct QuizView: View {
 
     private func optionBackground(_ option: String) -> some ShapeStyle {
         guard viewModel.showingResult else {
-            return AnyShapeStyle(Color(.secondarySystemBackground))
+            return AnyShapeStyle(Pico.cardSurface)
         }
         if option.lowercased() == viewModel.correctAnswer.lowercased() {
-            return AnyShapeStyle(Color.green.opacity(0.1))
+            return AnyShapeStyle(Pico.leafGreen.opacity(0.1))
         }
         if option == viewModel.userAnswer && viewModel.isCorrect == false {
             return AnyShapeStyle(Color.red.opacity(0.1))
         }
-        return AnyShapeStyle(Color(.secondarySystemBackground))
+        return AnyShapeStyle(Pico.cardSurface)
     }
 
     private func optionBorder(_ option: String) -> Color {
         guard viewModel.showingResult else { return .clear }
-        if option.lowercased() == viewModel.correctAnswer.lowercased() { return .green }
+        if option.lowercased() == viewModel.correctAnswer.lowercased() { return Pico.leafGreen }
         if option == viewModel.userAnswer && viewModel.isCorrect == false { return .red }
         return .clear
     }
 
     private func optionForeground(_ option: String) -> Color {
-        guard viewModel.showingResult else { return .primary }
-        if option.lowercased() == viewModel.correctAnswer.lowercased() { return .green }
+        guard viewModel.showingResult else { return Pico.deepForestGreen }
+        if option.lowercased() == viewModel.correctAnswer.lowercased() { return Pico.leafGreen }
         if option == viewModel.userAnswer && viewModel.isCorrect == false { return .red }
-        return .secondary
+        return Pico.deepForestGreen.opacity(0.4)
     }
 
     private func submitCurrentAnswer() {
@@ -320,21 +322,22 @@ struct QuizView: View {
             HStack(spacing: 12) {
                 ZStack {
                     Circle()
-                        .fill((viewModel.isCorrect == true ? Color.green : Color.red).opacity(0.12))
+                        .fill((viewModel.isCorrect == true ? Pico.leafGreen : Color.red).opacity(0.12))
                         .frame(width: 44, height: 44)
                     Image(systemName: viewModel.isCorrect == true ? "checkmark" : "xmark")
                         .font(.body.weight(.bold))
-                        .foregroundStyle(viewModel.isCorrect == true ? .green : .red)
+                        .foregroundStyle(viewModel.isCorrect == true ? Pico.leafGreen : .red)
                 }
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(viewModel.isCorrect == true ? "Correct!" : "Not quite")
-                        .font(.headline)
+                        .font(.system(.headline, design: .rounded))
+                        .foregroundStyle(Pico.deepForestGreen)
 
                     if viewModel.isCorrect == false {
                         Text(viewModel.correctAnswer)
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(Theme.tangerine)
+                            .font(.system(.subheadline, design: .rounded, weight: .semibold))
+                            .foregroundStyle(Pico.terracotta)
                     }
                 }
 
@@ -345,40 +348,36 @@ struct QuizView: View {
                 } label: {
                     Image(systemName: "speaker.wave.2.fill")
                         .font(.title3)
-                        .foregroundStyle(Theme.tangerine)
+                        .foregroundStyle(Pico.deepForestGreen)
                         .frame(width: 44, height: 44)
-                        .background(Theme.tangerine.opacity(0.1), in: Circle())
+                        .background(Pico.deepForestGreen.opacity(0.08), in: Circle())
                 }
             }
-            .padding(16)
-            .background(
-                (viewModel.isCorrect == true ? Color.green : Color.red).opacity(0.06),
-                in: .rect(cornerRadius: 16)
-            )
+            .picoCard()
 
             if viewModel.isCorrect == false && !viewModel.feedbackExplanation.isEmpty {
                 VStack(alignment: .leading, spacing: 6) {
                     HStack(spacing: 6) {
                         Image(systemName: "lightbulb.fill")
                             .font(.caption)
-                            .foregroundStyle(Theme.amber)
+                            .foregroundStyle(Pico.amber)
                         Text("Why?")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(Theme.amber)
+                            .font(.system(.caption, design: .rounded, weight: .bold))
+                            .foregroundStyle(Pico.amber)
                     }
                     Text(viewModel.feedbackExplanation)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(.system(.caption, design: .rounded))
+                        .foregroundStyle(Pico.deepForestGreen.opacity(0.6))
                         .lineSpacing(2)
                     if !viewModel.feedbackExample.isEmpty {
                         Text(viewModel.feedbackExample)
-                            .font(.caption.italic())
-                            .foregroundStyle(.tertiary)
+                            .font(.system(.caption, design: .rounded).italic())
+                            .foregroundStyle(Pico.deepForestGreen.opacity(0.4))
                     }
                 }
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Theme.amber.opacity(0.06), in: .rect(cornerRadius: 12))
+                .background(Pico.amber.opacity(0.06), in: .rect(cornerRadius: 12))
                 .padding(.horizontal, 4)
             }
 
@@ -390,11 +389,11 @@ struct QuizView: View {
                 viewModel.nextQuestion()
             } label: {
                 Text(viewModel.questionsAnswered >= viewModel.totalQuestions ? "Finish" : "Continue")
-                    .font(.headline)
+                    .font(.system(.headline, design: .rounded))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .frame(height: 52)
-                    .background(Theme.tangerineGradient, in: .rect(cornerRadius: 14))
+                    .background(Pico.primaryGradient, in: .rect(cornerRadius: 14))
             }
         }
         .padding(.horizontal, 20)
@@ -406,29 +405,28 @@ struct QuizView: View {
 
             ZStack {
                 Circle()
-                    .fill(Theme.tangerine.opacity(0.1))
-                    .frame(width: 120, height: 120)
-                Circle()
-                    .fill(Theme.tangerine.opacity(0.06))
-                    .frame(width: 160, height: 160)
+                    .fill(Pico.leafGreen.opacity(0.08))
+                    .frame(width: 140, height: 140)
                 Image(systemName: "bird.fill")
                     .font(.system(size: 52))
-                    .foregroundStyle(Theme.tangerine)
+                    .foregroundStyle(Pico.leafGreen)
                     .symbolEffect(.bounce, value: viewModel.isComplete)
             }
 
             VStack(spacing: 8) {
                 Text("Level Complete!")
-                    .font(.system(.largeTitle, design: .rounded, weight: .bold))
+                    .font(.system(.largeTitle, design: .serif, weight: .bold))
+                    .tracking(-0.5)
+                    .foregroundStyle(Pico.deepForestGreen)
 
                 Text("You conquered the \(viewModel.level.tense)")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(.system(.subheadline, design: .rounded))
+                    .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
             }
 
             HStack(spacing: 20) {
-                completionStat(icon: "star.fill", value: "\(viewModel.score)", label: "Score", color: Theme.gold)
-                completionStat(icon: "checkmark.circle.fill", value: "\(viewModel.questionsAnswered)", label: "Answered", color: .green)
+                completionStat(icon: "star.fill", value: "\(viewModel.score)", label: "Score", color: Pico.gold)
+                completionStat(icon: "checkmark.circle.fill", value: "\(viewModel.questionsAnswered)", label: "Answered", color: Pico.leafGreen)
             }
             .padding(.horizontal, 40)
 
@@ -441,13 +439,13 @@ struct QuizView: View {
                 HStack(spacing: 8) {
                     Image(systemName: "arrow.left")
                     Text("Back to Path")
-                        .font(.headline)
+                        .font(.system(.headline, design: .rounded))
                 }
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .frame(height: 56)
-                .background(Theme.tangerineGradient, in: .rect(cornerRadius: 16))
-                .shadow(color: Theme.tangerine.opacity(0.3), radius: 8, y: 4)
+                .background(Pico.primaryGradient, in: .rect(cornerRadius: 16))
+                .shadow(color: Pico.deepForestGreen.opacity(0.2), radius: 8, y: 4)
             }
             .padding(.horizontal, 24)
             .padding(.bottom, 40)
@@ -461,13 +459,21 @@ struct QuizView: View {
                 .font(.title2)
                 .foregroundStyle(color)
             Text(value)
-                .font(.title.weight(.bold).monospacedDigit())
+                .font(.system(.title, design: .rounded, weight: .bold).monospacedDigit())
+                .foregroundStyle(Pico.deepForestGreen)
             Text(label)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .font(.system(.caption, design: .rounded))
+                .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 20)
-        .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: 16))
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Pico.cardSurface)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .strokeBorder(Pico.cardLightStroke, lineWidth: 1)
+                )
+        )
     }
 }

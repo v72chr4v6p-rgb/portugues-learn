@@ -10,7 +10,7 @@ struct FlashcardView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(.systemGroupedBackground).ignoresSafeArea()
+                Pico.plaster.ignoresSafeArea()
 
                 if let vm = viewModel {
                     if vm.isComplete {
@@ -104,14 +104,14 @@ struct FlashcardView: View {
                     .animation(.spring(response: 0.4, dampingFraction: 0.7), value: vm.dragOffset)
             } else {
                 RoundedRectangle(cornerRadius: 24)
-                    .fill(Color(.tertiarySystemBackground))
-                    .shadow(color: .black.opacity(0.04), radius: 8, y: 4)
+                    .fill(Pico.cardSurface.opacity(0.7))
+                    .shadow(color: Pico.deepForestGreen.opacity(0.04), radius: 8, y: 4)
                     .frame(maxWidth: .infinity)
                     .frame(height: 380)
                     .overlay {
                         Text(card.verb.infinitive)
-                            .font(.title2.weight(.bold))
-                            .foregroundStyle(.tertiary)
+                            .font(.system(.title2, design: .rounded, weight: .bold))
+                            .foregroundStyle(Pico.deepForestGreen.opacity(0.2))
                     }
                     .scaleEffect(scale)
                     .offset(y: yOff)
@@ -121,19 +121,26 @@ struct FlashcardView: View {
 
     private func frontCard(card: FlashcardViewModel.FlashcardItem, vm: FlashcardViewModel) -> some View {
         Button {
-            withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+            withAnimation(.spring(response: 0.6, dampingFraction: 0.75)) {
                 vm.flipCard()
             }
+            HapticService.lightTap()
         } label: {
             ZStack {
                 RoundedRectangle(cornerRadius: 24)
-                    .fill(Color(.secondarySystemBackground))
-                    .shadow(color: .black.opacity(0.1), radius: 20, y: 8)
+                    .fill(Pico.cardSurface)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 24)
+                            .strokeBorder(Pico.cardLightStroke, lineWidth: 1)
+                    )
+                    .shadow(color: Pico.deepForestGreen.opacity(0.08), radius: 20, y: 8)
 
                 if !vm.isFlipped {
                     cardFrontContent(card: card, vm: vm)
+                        .opacity(vm.isFlipped ? 0 : 1)
                 } else {
                     cardBackContent(card: card, vm: vm)
+                        .opacity(vm.isFlipped ? 1 : 0)
                 }
             }
             .frame(maxWidth: .infinity)
@@ -143,8 +150,11 @@ struct FlashcardView: View {
         .rotation3DEffect(
             .degrees(vm.isFlipped ? 180 : 0),
             axis: (x: 0, y: 1, z: 0),
-            perspective: 0.5
+            anchor: .center,
+            perspective: 0.4
         )
+        .scaleEffect(vm.isFlipped ? 0.98 : 1.0)
+        .animation(.spring(response: 0.6, dampingFraction: 0.75), value: vm.isFlipped)
     }
 
     private func cardFrontContent(card: FlashcardViewModel.FlashcardItem, vm: FlashcardViewModel) -> some View {
@@ -152,25 +162,26 @@ struct FlashcardView: View {
             Spacer()
 
             Text(card.tense)
-                .font(.caption.weight(.bold))
-                .foregroundStyle(Theme.tangerine)
+                .font(.system(.caption, design: .rounded, weight: .bold))
+                .foregroundStyle(Pico.deepForestGreen)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 5)
-                .background(Theme.tangerine.opacity(0.1), in: Capsule())
+                .background(Pico.deepForestGreen.opacity(0.08), in: Capsule())
 
             Text(card.verb.infinitive)
                 .font(.system(size: 34, weight: .bold, design: .rounded))
+                .foregroundStyle(Pico.deepForestGreen)
 
             Text(card.verb.translation)
-                .font(.title3)
-                .foregroundStyle(.secondary)
+                .font(.system(.title3, design: .rounded))
+                .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
 
             if card.verb.irregular {
                 HStack(spacing: 4) {
                     Image(systemName: "exclamationmark.triangle.fill")
                         .font(.caption2)
                     Text("Irregular")
-                        .font(.caption.weight(.semibold))
+                        .font(.system(.caption, design: .rounded, weight: .semibold))
                 }
                 .foregroundStyle(.orange)
             }
@@ -182,12 +193,12 @@ struct FlashcardView: View {
                     Image(systemName: "speaker.wave.2.fill")
                         .font(.subheadline)
                     Text("Listen")
-                        .font(.subheadline.weight(.medium))
+                        .font(.system(.subheadline, design: .rounded, weight: .medium))
                 }
-                .foregroundStyle(Theme.tangerine)
+                .foregroundStyle(Pico.deepForestGreen)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 10)
-                .background(Theme.tangerine.opacity(0.1), in: Capsule())
+                .background(Pico.deepForestGreen.opacity(0.08), in: Capsule())
             }
 
             Spacer()
@@ -196,9 +207,9 @@ struct FlashcardView: View {
                 Image(systemName: "hand.tap")
                     .font(.caption2)
                 Text("Tap to reveal conjugations")
-                    .font(.caption)
+                    .font(.system(.caption, design: .rounded))
             }
-            .foregroundStyle(.quaternary)
+            .foregroundStyle(Pico.deepForestGreen.opacity(0.25))
             .padding(.bottom, 20)
         }
         .padding(24)
@@ -208,34 +219,37 @@ struct FlashcardView: View {
         VStack(spacing: 12) {
             HStack {
                 Text(card.verb.infinitive)
-                    .font(.headline)
-                    .foregroundStyle(Theme.tangerine)
+                    .font(.system(.headline, design: .rounded))
+                    .foregroundStyle(Pico.deepForestGreen)
                 Spacer()
                 Button {
                     speechService.speak(card.verb.infinitive, dialect: vm.dialect)
                 } label: {
                     Image(systemName: "speaker.wave.2.fill")
                         .font(.subheadline)
-                        .foregroundStyle(Theme.tangerine)
+                        .foregroundStyle(Pico.deepForestGreen)
                         .frame(width: 36, height: 36)
-                        .background(Theme.tangerine.opacity(0.1), in: Circle())
+                        .background(Pico.deepForestGreen.opacity(0.08), in: Circle())
                 }
             }
             .padding(.top, 20)
             .padding(.horizontal, 24)
 
-            Divider().padding(.horizontal, 20)
+            Divider()
+                .foregroundStyle(Pico.earthBrown.opacity(0.08))
+                .padding(.horizontal, 20)
 
             let conjugations = card.verb.conjugations.forDialect(vm.dialect)
             VStack(spacing: 8) {
                 ForEach(Array(conjugations.sorted(by: { $0.key < $1.key })), id: \.key) { key, value in
                     HStack {
                         Text(Pronoun(rawValue: key)?.displayName ?? key)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .font(.system(.subheadline, design: .rounded))
+                            .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
                             .frame(width: 80, alignment: .trailing)
                         Text(value)
-                            .font(.body.weight(.semibold))
+                            .font(.system(.body, design: .rounded, weight: .semibold))
+                            .foregroundStyle(Pico.deepForestGreen)
 
                         Spacer()
 
@@ -244,7 +258,7 @@ struct FlashcardView: View {
                         } label: {
                             Image(systemName: "speaker.wave.1.fill")
                                 .font(.caption)
-                                .foregroundStyle(Theme.tangerine.opacity(0.6))
+                                .foregroundStyle(Pico.deepForestGreen.opacity(0.4))
                         }
                     }
                     .padding(.horizontal, 24)
@@ -326,31 +340,32 @@ struct FlashcardView: View {
         VStack(spacing: 12) {
             HStack {
                 HStack(spacing: 6) {
-                    Circle().fill(Color.green).frame(width: 8, height: 8)
+                    Circle().fill(Pico.leafGreen).frame(width: 8, height: 8)
                     Text("\(vm.masteredCount) mastered")
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(.secondary)
+                        .font(.system(.subheadline, design: .rounded, weight: .medium))
+                        .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
                 }
 
                 Spacer()
 
                 Text("\(vm.currentIndex + 1) of \(vm.cards.count)")
-                    .font(.subheadline.weight(.bold).monospacedDigit())
+                    .font(.system(.subheadline, design: .rounded, weight: .bold).monospacedDigit())
+                    .foregroundStyle(Pico.deepForestGreen)
 
                 Spacer()
 
                 HStack(spacing: 6) {
                     Text("\(vm.studyAgainCount) review")
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(.secondary)
+                        .font(.system(.subheadline, design: .rounded, weight: .medium))
+                        .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
                     Circle().fill(Color.orange).frame(width: 8, height: 8)
                 }
             }
 
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
-                    Capsule().fill(Color(.systemGray5))
-                    Capsule().fill(Theme.tangerineGradient)
+                    Capsule().fill(Pico.earthBrown.opacity(0.08))
+                    Capsule().fill(Pico.primaryGradient)
                         .frame(width: vm.cards.count > 0
                             ? geo.size.width * CGFloat(vm.currentIndex) / CGFloat(vm.cards.count)
                             : 0
@@ -373,24 +388,25 @@ struct FlashcardView: View {
                     .frame(width: 64, height: 64)
                     .background(
                         Circle()
-                            .fill(Color(.secondarySystemBackground))
-                            .shadow(color: .red.opacity(0.1), radius: 8, y: 2)
+                            .fill(Pico.cardSurface)
+                            .shadow(color: .red.opacity(0.08), radius: 8, y: 2)
                     )
             }
 
             Button {
-                withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+                withAnimation(.spring(response: 0.6, dampingFraction: 0.75)) {
                     vm.flipCard()
                 }
+                HapticService.lightTap()
             } label: {
                 Image(systemName: "arrow.turn.up.right")
                     .font(.title3.weight(.semibold))
-                    .foregroundStyle(Theme.tangerine)
+                    .foregroundStyle(Pico.deepForestGreen)
                     .frame(width: 50, height: 50)
                     .background(
                         Circle()
-                            .fill(Color(.secondarySystemBackground))
-                            .shadow(color: Theme.tangerine.opacity(0.1), radius: 8, y: 2)
+                            .fill(Pico.cardSurface)
+                            .shadow(color: Pico.deepForestGreen.opacity(0.08), radius: 8, y: 2)
                     )
             }
 
@@ -399,12 +415,12 @@ struct FlashcardView: View {
             } label: {
                 Image(systemName: "checkmark")
                     .font(.title2.weight(.bold))
-                    .foregroundStyle(.green)
+                    .foregroundStyle(Pico.leafGreen)
                     .frame(width: 64, height: 64)
                     .background(
                         Circle()
-                            .fill(Color(.secondarySystemBackground))
-                            .shadow(color: .green.opacity(0.1), radius: 8, y: 2)
+                            .fill(Pico.cardSurface)
+                            .shadow(color: Pico.leafGreen.opacity(0.08), radius: 8, y: 2)
                     )
             }
         }
@@ -433,38 +449,39 @@ struct FlashcardView: View {
 
             ZStack {
                 Circle()
-                    .fill(Theme.tangerine.opacity(0.08))
+                    .fill(Pico.leafGreen.opacity(0.08))
                     .frame(width: 140, height: 140)
                 Image(systemName: "sparkles")
                     .font(.system(size: 56))
-                    .foregroundStyle(Theme.tangerine)
+                    .foregroundStyle(Pico.leafGreen)
                     .symbolEffect(.bounce, value: vm.isComplete)
             }
 
             Text("Session Complete!")
-                .font(.system(.title, design: .rounded, weight: .bold))
+                .font(.system(.title, design: .serif, weight: .bold))
+                .tracking(-0.3)
+                .foregroundStyle(Pico.deepForestGreen)
 
             HStack(spacing: 32) {
                 VStack(spacing: 6) {
                     Text("\(vm.masteredCount)")
-                        .font(.title.weight(.bold))
-                        .foregroundStyle(.green)
+                        .font(.system(.title, design: .rounded, weight: .bold))
+                        .foregroundStyle(Pico.leafGreen)
                     Text("Mastered")
-                        .font(.caption.weight(.medium))
-                        .foregroundStyle(.secondary)
+                        .font(.system(.caption, design: .rounded, weight: .medium))
+                        .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
                 }
 
                 VStack(spacing: 6) {
                     Text("\(vm.studyAgainCount)")
-                        .font(.title.weight(.bold))
+                        .font(.system(.title, design: .rounded, weight: .bold))
                         .foregroundStyle(.orange)
                     Text("Review")
-                        .font(.caption.weight(.medium))
-                        .foregroundStyle(.secondary)
+                        .font(.system(.caption, design: .rounded, weight: .medium))
+                        .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
                 }
             }
-            .padding(24)
-            .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: 20))
+            .picoCard()
 
             Spacer()
 
@@ -472,12 +489,12 @@ struct FlashcardView: View {
                 withAnimation(.spring) { vm.reset() }
             } label: {
                 Text("Start New Session")
-                    .font(.headline)
+                    .font(.system(.headline, design: .rounded))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .frame(height: 56)
-                    .background(Theme.tangerineGradient, in: .rect(cornerRadius: 16))
-                    .shadow(color: Theme.tangerine.opacity(0.3), radius: 8, y: 4)
+                    .background(Pico.primaryGradient, in: .rect(cornerRadius: 16))
+                    .shadow(color: Pico.deepForestGreen.opacity(0.2), radius: 8, y: 4)
             }
             .padding(.horizontal, 24)
             .padding(.bottom, 40)
