@@ -138,7 +138,7 @@ struct QuickReviewView: View {
                     } label: {
                         Text("Check")
                             .font(.system(.headline, design: .rounded))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Pico.plaster)
                             .frame(maxWidth: .infinity)
                             .frame(height: 52)
                             .background(
@@ -183,7 +183,7 @@ struct QuickReviewView: View {
             } label: {
                 Text(currentIndex + 1 >= items.count ? "Finish" : "Continue")
                     .font(.system(.headline, design: .rounded))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Pico.plaster)
                     .frame(maxWidth: .infinity)
                     .frame(height: 52)
                     .background(Pico.primaryGradient, in: .rect(cornerRadius: 14))
@@ -217,7 +217,7 @@ struct QuickReviewView: View {
             } label: {
                 Text("Done")
                     .font(.system(.headline, design: .rounded))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Pico.plaster)
                     .frame(maxWidth: .infinity)
                     .frame(height: 56)
                     .background(Pico.primaryGradient, in: .rect(cornerRadius: 16))

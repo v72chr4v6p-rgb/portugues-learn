@@ -139,12 +139,9 @@ struct ForestPathView: View {
             }
         } label: {
             HStack(spacing: 0) {
-                if isCompleted {
-                    sideTree(index: index, side: .left)
-                        .frame(width: 44)
-                } else {
-                    Spacer().frame(width: 44)
-                }
+                sideLeaves(index: index, side: .left)
+                    .frame(width: 44)
+                    .opacity(isCompleted ? 1.0 : (isUnlocked ? 0.3 : 0.12))
 
                 VStack(spacing: 0) {
                     ZStack {
@@ -197,12 +194,9 @@ struct ForestPathView: View {
                 }
                 .offset(x: xOffset)
 
-                if isCompleted {
-                    sideTree(index: index, side: .right)
-                        .frame(width: 44)
-                } else {
-                    Spacer().frame(width: 44)
-                }
+                sideLeaves(index: index, side: .right)
+                    .frame(width: 44)
+                    .opacity(isCompleted ? 1.0 : (isUnlocked ? 0.3 : 0.12))
             }
         }
         .buttonStyle(.plain)
@@ -212,34 +206,38 @@ struct ForestPathView: View {
 
     private enum TreeSide { case left, right }
 
-    private func sideTree(index: Int, side: TreeSide) -> some View {
-        let rotation = side == .left ? -8.0 + Double(index % 3) * 4 : 8.0 - Double(index % 3) * 4
-        let treeVariation = index % 3
+    private func sideLeaves(index: Int, side: TreeSide) -> some View {
+        let baseRotation = side == .left ? -25.0 : 25.0
+        let variation = Double(index % 4) * 8
+        let leafCount = (index % 3) + 1
 
-        return VStack(spacing: 0) {
-            if let img = UIImage(named: "path_side_tree") {
-                Image(uiImage: img)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 36, height: 36)
-                    .scaleEffect(x: side == .left ? 1 : -1, y: 1)
-                    .rotationEffect(.degrees(rotation))
-                    .opacity(0.85)
-            } else {
-                Image(systemName: treeVariation == 0 ? "tree.fill" : (treeVariation == 1 ? "leaf.fill" : "tree.fill"))
-                    .font(.system(size: 22))
+        return VStack(spacing: 2) {
+            ForEach(0..<leafCount, id: \.self) { leafIdx in
+                let leafRotation = baseRotation + variation + Double(leafIdx) * (side == .left ? 12 : -12)
+                let leafSize: CGFloat = leafIdx == 0 ? 14 : (leafIdx == 1 ? 11 : 9)
+                let leafOpacity = 1.0 - Double(leafIdx) * 0.2
+                let leafSymbol = leafIdx % 2 == 0 ? "leaf.fill" : "leaf"
+
+                Image(systemName: leafSymbol)
+                    .font(.system(size: leafSize))
                     .foregroundStyle(
                         LinearGradient(
-                            colors: [Pico.tropicalGreen, Pico.leafGreen],
+                            colors: [
+                                Pico.leafGreen.opacity(leafOpacity),
+                                Pico.tropicalGreen.opacity(leafOpacity * 0.8)
+                            ],
                             startPoint: .bottom,
                             endPoint: .top
                         )
                     )
+                    .rotationEffect(.degrees(leafRotation))
                     .scaleEffect(x: side == .left ? 1 : -1, y: 1)
-                    .rotationEffect(.degrees(rotation))
             }
         }
-        .offset(y: CGFloat(index % 2 == 0 ? -4 : 4))
+        .offset(
+            x: side == .left ? -4 : 4,
+            y: CGFloat(index % 2 == 0 ? -6 : 2)
+        )
     }
 
     private func nodeContent(level: Level, isUnlocked: Bool, isCompleted: Bool, isCurrent: Bool) -> some View {
@@ -255,7 +253,7 @@ struct ForestPathView: View {
             } else {
                 Text("\(level.level)")
                     .font(.system(.title3, design: .rounded, weight: .heavy))
-                    .foregroundStyle(isCurrent ? Pico.amber : .white)
+                    .foregroundStyle(isCurrent ? Pico.amber : Pico.plaster)
                     .shadow(color: .black.opacity(0.2), radius: 1, y: 1)
             }
         }

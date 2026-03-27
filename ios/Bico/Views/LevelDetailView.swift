@@ -433,7 +433,7 @@ struct LevelDetailView: View {
                 Text(progressService.isLevelCracked(level.level) ? "Repair Session" : "Start Full Practice")
                     .font(.system(.headline, design: .rounded))
             }
-            .foregroundStyle(.white)
+            .foregroundStyle(Pico.plaster)
             .frame(maxWidth: .infinity)
             .frame(height: 52)
             .background(Pico.primaryGradient, in: .rect(cornerRadius: 14))

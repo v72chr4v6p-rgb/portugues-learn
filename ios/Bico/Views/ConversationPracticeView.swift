@@ -125,7 +125,7 @@ struct ConversationPracticeView: View {
                         Text("Start Practice")
                             .font(.system(.headline, design: .rounded))
                     }
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Pico.plaster)
                     .frame(maxWidth: .infinity)
                     .frame(height: 56)
                     .background(Pico.primaryGradient, in: .rect(cornerRadius: 16))
@@ -258,7 +258,7 @@ struct ConversationPracticeView: View {
                     } label: {
                         Text("Check")
                             .font(.system(.headline, design: .rounded))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Pico.plaster)
                             .frame(maxWidth: .infinity)
                             .frame(height: 52)
                             .background(
@@ -315,7 +315,7 @@ struct ConversationPracticeView: View {
             } label: {
                 Text(currentScenario + 1 >= scenarios.count ? "Finish" : "Continue")
                     .font(.system(.headline, design: .rounded))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Pico.plaster)
                     .frame(maxWidth: .infinity)
                     .frame(height: 52)
                     .background(Pico.primaryGradient, in: .rect(cornerRadius: 14))
@@ -349,7 +349,7 @@ struct ConversationPracticeView: View {
             } label: {
                 Text("Done")
                     .font(.system(.headline, design: .rounded))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Pico.plaster)
                     .frame(maxWidth: .infinity)
                     .frame(height: 56)
                     .background(Pico.primaryGradient, in: .rect(cornerRadius: 16))

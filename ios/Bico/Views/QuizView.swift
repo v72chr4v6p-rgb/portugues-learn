@@ -200,7 +200,7 @@ struct QuizView: View {
                 } label: {
                     Text("Check")
                         .font(.system(.headline, design: .rounded))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Pico.plaster)
                         .frame(maxWidth: .infinity)
                         .frame(height: 52)
                         .background(
@@ -390,7 +390,7 @@ struct QuizView: View {
             } label: {
                 Text(viewModel.questionsAnswered >= viewModel.totalQuestions ? "Finish" : "Continue")
                     .font(.system(.headline, design: .rounded))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Pico.plaster)
                     .frame(maxWidth: .infinity)
                     .frame(height: 52)
                     .background(Pico.primaryGradient, in: .rect(cornerRadius: 14))
@@ -441,7 +441,7 @@ struct QuizView: View {
                     Text("Back to Path")
                         .font(.system(.headline, design: .rounded))
                 }
-                .foregroundStyle(.white)
+                .foregroundStyle(Pico.plaster)
                 .frame(maxWidth: .infinity)
                 .frame(height: 56)
                 .background(Pico.primaryGradient, in: .rect(cornerRadius: 16))

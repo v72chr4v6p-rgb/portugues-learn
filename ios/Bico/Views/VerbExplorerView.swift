@@ -110,7 +110,7 @@ struct VerbExplorerView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 10)
                     .background(!showGlossary ? Pico.deepForestGreen : Color.clear, in: .rect(cornerRadius: 12))
-                    .foregroundStyle(!showGlossary ? .white : Pico.deepForestGreen.opacity(0.5))
+                    .foregroundStyle(!showGlossary ? Pico.plaster : Pico.deepForestGreen.opacity(0.5))
             }
             .buttonStyle(.plain)
 
@@ -123,7 +123,7 @@ struct VerbExplorerView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 10)
                     .background(showGlossary ? Pico.deepForestGreen : Color.clear, in: .rect(cornerRadius: 12))
-                    .foregroundStyle(showGlossary ? .white : Pico.deepForestGreen.opacity(0.5))
+                    .foregroundStyle(showGlossary ? Pico.plaster : Pico.deepForestGreen.opacity(0.5))
             }
             .buttonStyle(.plain)
         }
@@ -342,7 +342,7 @@ struct VerbDetailSheet: View {
                 } label: {
                     Image(systemName: "speaker.wave.2.fill")
                         .font(.title2)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Pico.plaster)
                         .frame(width: 56, height: 56)
                         .background(Pico.primaryGradient, in: Circle())
                         .shadow(color: Pico.deepForestGreen.opacity(0.2), radius: 8, y: 4)

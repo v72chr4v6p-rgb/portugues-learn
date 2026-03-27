@@ -490,7 +490,7 @@ struct FlashcardView: View {
             } label: {
                 Text("Start New Session")
                     .font(.system(.headline, design: .rounded))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Pico.plaster)
                     .frame(maxWidth: .infinity)
                     .frame(height: 56)
                     .background(Pico.primaryGradient, in: .rect(cornerRadius: 16))

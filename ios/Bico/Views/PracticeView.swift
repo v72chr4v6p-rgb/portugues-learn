@@ -170,7 +170,7 @@ struct PracticeView: View {
                         Text("Start Practice")
                             .font(.system(.headline, design: .rounded))
                     }
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Pico.plaster)
                     .frame(maxWidth: .infinity)
                     .frame(height: 56)
                     .background(Pico.primaryGradient, in: .rect(cornerRadius: 16))
@@ -342,7 +342,7 @@ struct PracticeView: View {
                 } label: {
                     Text("Check")
                         .font(.system(.headline, design: .rounded))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Pico.plaster)
                         .frame(maxWidth: .infinity)
                         .frame(height: 52)
                         .background(
@@ -454,7 +454,7 @@ struct PracticeView: View {
             } label: {
                 Text(vm.currentIndex + 1 >= vm.practiceItems.count ? "See Results" : "Continue")
                     .font(.system(.headline, design: .rounded))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Pico.plaster)
                     .frame(maxWidth: .infinity)
                     .frame(height: 52)
                     .background(Pico.primaryGradient, in: .rect(cornerRadius: 14))
@@ -502,7 +502,7 @@ struct PracticeView: View {
                 } label: {
                     Text("Practice Again")
                         .font(.system(.headline, design: .rounded))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Pico.plaster)
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
                         .background(Pico.primaryGradient, in: .rect(cornerRadius: 16))

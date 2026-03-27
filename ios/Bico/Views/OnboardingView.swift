@@ -124,7 +124,7 @@ struct OnboardingView: View {
         } label: {
             Text("Continue")
                 .font(.system(.headline, design: .rounded))
-                .foregroundStyle(.white)
+                .foregroundStyle(Pico.plaster)
                 .frame(maxWidth: .infinity)
                 .frame(height: 56)
                 .background(

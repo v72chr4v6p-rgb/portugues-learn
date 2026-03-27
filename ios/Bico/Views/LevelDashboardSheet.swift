@@ -262,7 +262,7 @@ struct LevelDashboardSheet: View {
                 Text(progressService.isLevelCracked(level.level) ? "Repair Session" : "Start")
                     .font(.headline)
             }
-            .foregroundStyle(.white)
+            .foregroundStyle(Pico.plaster)
             .frame(maxWidth: .infinity)
             .frame(height: 56)
             .background(Theme.tangerineGradient, in: .rect(cornerRadius: 16))
