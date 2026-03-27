@@ -15,8 +15,8 @@ struct ConversationPracticeView: View {
     @Environment(\.dismiss) private var dismiss
 
     private var scenarios: [ConversationScenario] {
-        let all = dialect == .brazilian ? brazilianScenarios : europeanScenarios
-        return Array(all.filter { $0.difficulty == selectedDifficulty }.prefix(8))
+        let all = ConversationDataService.scenarios(for: dialect)
+        return Array(all.filter { $0.difficulty == selectedDifficulty }.shuffled().prefix(10))
     }
 
     var body: some View {
@@ -448,61 +448,3 @@ struct ConversationScenario {
     let alternates: [String]
     let difficulty: Difficulty
 }
-
-private let brazilianScenarios: [ConversationScenario] = [
-    ConversationScenario(situation: "At a café", prompt: "Bom dia! O que você quer tomar?", instruction: "Say you want a coffee, please", answer: "Eu quero um café, por favor", alternates: ["Quero um café, por favor", "Um café, por favor"], difficulty: .beginner),
-    ConversationScenario(situation: "Meeting someone", prompt: "Oi! Como você se chama?", instruction: "Say your name (use 'Ana')", answer: "Eu me chamo Ana", alternates: ["Me chamo Ana", "Meu nome é Ana"], difficulty: .beginner),
-    ConversationScenario(situation: "Greeting", prompt: "Tudo bem?", instruction: "Say everything is fine, thanks", answer: "Tudo bem, obrigado", alternates: ["Tudo bem, obrigada", "Tudo bom", "Tudo bem"], difficulty: .beginner),
-    ConversationScenario(situation: "Asking directions", prompt: "Onde fica o supermercado?", instruction: "Say it's on the right", answer: "Fica à direita", alternates: ["É à direita", "Está à direita"], difficulty: .beginner),
-    ConversationScenario(situation: "Restaurant", prompt: "Você já escolheu?", instruction: "Say you want the chicken, please", answer: "Eu quero o frango, por favor", alternates: ["Quero o frango, por favor", "Vou querer o frango"], difficulty: .beginner),
-    ConversationScenario(situation: "At the store", prompt: "Posso ajudar?", instruction: "Say you are looking for a book", answer: "Estou procurando um livro", alternates: ["Eu estou procurando um livro", "Procuro um livro"], difficulty: .beginner),
-    ConversationScenario(situation: "Taxi", prompt: "Para onde vai?", instruction: "Say you're going to the airport", answer: "Vou para o aeroporto", alternates: ["Eu vou para o aeroporto", "Para o aeroporto, por favor"], difficulty: .beginner),
-    ConversationScenario(situation: "Phone call", prompt: "Alô, quem fala?", instruction: "Say it's you (use 'João')", answer: "É o João", alternates: ["Sou o João", "Aqui é o João"], difficulty: .beginner),
-
-    ConversationScenario(situation: "Making plans", prompt: "O que você vai fazer amanhã?", instruction: "Say you're going to study Portuguese", answer: "Vou estudar português", alternates: ["Eu vou estudar português", "Amanhã vou estudar português"], difficulty: .intermediate),
-    ConversationScenario(situation: "At work", prompt: "Você pode me ajudar com isso?", instruction: "Say yes, of course", answer: "Sim, claro", alternates: ["Claro que sim", "Posso sim", "Sim, com certeza"], difficulty: .intermediate),
-    ConversationScenario(situation: "Doctor's office", prompt: "O que você está sentindo?", instruction: "Say you have a headache", answer: "Estou com dor de cabeça", alternates: ["Eu estou com dor de cabeça", "Tenho dor de cabeça"], difficulty: .intermediate),
-    ConversationScenario(situation: "Shopping", prompt: "Quanto custa?", instruction: "Say it's too expensive", answer: "É muito caro", alternates: ["Está muito caro", "Muito caro"], difficulty: .intermediate),
-    ConversationScenario(situation: "At a party", prompt: "Você conhece todo mundo aqui?", instruction: "Say you only know Maria", answer: "Só conheço a Maria", alternates: ["Eu só conheço a Maria", "Conheço só a Maria"], difficulty: .intermediate),
-    ConversationScenario(situation: "Travel", prompt: "Quanto tempo você ficou no Brasil?", instruction: "Say you stayed for two weeks", answer: "Fiquei duas semanas", alternates: ["Eu fiquei duas semanas", "Fiquei por duas semanas"], difficulty: .intermediate),
-    ConversationScenario(situation: "Restaurant", prompt: "Como estava a comida?", instruction: "Say the food was delicious", answer: "A comida estava deliciosa", alternates: ["Estava deliciosa", "Foi deliciosa"], difficulty: .intermediate),
-    ConversationScenario(situation: "At home", prompt: "Quem cozinhou hoje?", instruction: "Say your mother cooked", answer: "Minha mãe cozinhou", alternates: ["A minha mãe cozinhou", "Foi minha mãe que cozinhou"], difficulty: .intermediate),
-
-    ConversationScenario(situation: "Job interview", prompt: "Por que você quer trabalhar aqui?", instruction: "Say because you believe in the company", answer: "Porque eu acredito na empresa", alternates: ["Porque acredito na empresa", "Eu acredito no trabalho da empresa"], difficulty: .advanced),
-    ConversationScenario(situation: "Debate", prompt: "O que você acha sobre isso?", instruction: "Say you think it depends on the situation", answer: "Acho que depende da situação", alternates: ["Eu acho que depende da situação", "Depende da situação"], difficulty: .advanced),
-    ConversationScenario(situation: "Giving advice", prompt: "Estou muito estressado.", instruction: "Say he should rest more", answer: "Você deveria descansar mais", alternates: ["Deveria descansar mais", "Você precisa descansar mais"], difficulty: .advanced),
-    ConversationScenario(situation: "Hypothetical", prompt: "Se você pudesse viajar para qualquer lugar...", instruction: "Say you would go to Portugal", answer: "Eu iria para Portugal", alternates: ["Iria para Portugal", "Eu viajaria para Portugal"], difficulty: .advanced),
-    ConversationScenario(situation: "Past experience", prompt: "Conte sobre sua infância.", instruction: "Say when you were young you lived in the countryside", answer: "Quando eu era jovem, morava no interior", alternates: ["Quando era jovem, eu morava no interior", "Eu morava no interior quando era jovem"], difficulty: .advanced),
-    ConversationScenario(situation: "Expressing doubt", prompt: "Ela disse que vai chegar cedo.", instruction: "Say you doubt she will arrive on time", answer: "Duvido que ela chegue a tempo", alternates: ["Eu duvido que ela chegue a tempo"], difficulty: .advanced),
-    ConversationScenario(situation: "Polite request", prompt: "Preciso de uma informação.", instruction: "Say you could help if he wants", answer: "Eu poderia ajudar, se quiser", alternates: ["Posso ajudar se quiser", "Poderia ajudar, se você quiser"], difficulty: .advanced),
-    ConversationScenario(situation: "Explaining", prompt: "Por que você aprendeu português?", instruction: "Say you always wanted to understand the culture", answer: "Sempre quis entender a cultura", alternates: ["Eu sempre quis entender a cultura", "Porque sempre quis entender a cultura"], difficulty: .advanced),
-]
-
-private let europeanScenarios: [ConversationScenario] = [
-    ConversationScenario(situation: "At a café", prompt: "Bom dia! O que deseja?", instruction: "Say you want a coffee, please", answer: "Quero um café, por favor", alternates: ["Eu quero um café, por favor", "Um café, se faz favor"], difficulty: .beginner),
-    ConversationScenario(situation: "Meeting someone", prompt: "Olá! Como te chamas?", instruction: "Say your name (use 'Ana')", answer: "Chamo-me Ana", alternates: ["O meu nome é Ana", "Eu chamo-me Ana"], difficulty: .beginner),
-    ConversationScenario(situation: "Greeting", prompt: "Está bom?", instruction: "Say everything is fine, thanks", answer: "Está tudo bem, obrigado", alternates: ["Está tudo bem, obrigada", "Tudo bem", "Está bom, obrigado"], difficulty: .beginner),
-    ConversationScenario(situation: "Asking directions", prompt: "Onde fica o supermercado?", instruction: "Say it's on the right", answer: "Fica à direita", alternates: ["É à direita", "Está à direita"], difficulty: .beginner),
-    ConversationScenario(situation: "Restaurant", prompt: "Já escolheu?", instruction: "Say you want the fish, please", answer: "Quero o peixe, se faz favor", alternates: ["Eu quero o peixe, por favor", "O peixe, se faz favor"], difficulty: .beginner),
-    ConversationScenario(situation: "At the store", prompt: "Posso ajudar?", instruction: "Say you are looking for a book", answer: "Estou à procura de um livro", alternates: ["Procuro um livro", "Estou a procurar um livro"], difficulty: .beginner),
-    ConversationScenario(situation: "Taxi", prompt: "Para onde vai?", instruction: "Say you're going to the airport", answer: "Vou para o aeroporto", alternates: ["Para o aeroporto, se faz favor"], difficulty: .beginner),
-    ConversationScenario(situation: "Phone call", prompt: "Estou? Quem fala?", instruction: "Say it's you (use 'João')", answer: "É o João", alternates: ["Fala o João", "Aqui é o João"], difficulty: .beginner),
-
-    ConversationScenario(situation: "Making plans", prompt: "O que vais fazer amanhã?", instruction: "Say you're going to study Portuguese", answer: "Vou estudar português", alternates: ["Amanhã vou estudar português"], difficulty: .intermediate),
-    ConversationScenario(situation: "At work", prompt: "Podes ajudar-me com isto?", instruction: "Say yes, of course", answer: "Sim, claro", alternates: ["Claro que sim", "Posso sim", "Com certeza"], difficulty: .intermediate),
-    ConversationScenario(situation: "Doctor's office", prompt: "O que é que sente?", instruction: "Say you have a headache", answer: "Tenho dores de cabeça", alternates: ["Estou com dores de cabeça", "Dói-me a cabeça"], difficulty: .intermediate),
-    ConversationScenario(situation: "Shopping", prompt: "Quanto custa?", instruction: "Say it's too expensive", answer: "É muito caro", alternates: ["Está muito caro", "Muito caro"], difficulty: .intermediate),
-    ConversationScenario(situation: "At a party", prompt: "Conheces toda a gente aqui?", instruction: "Say you only know Maria", answer: "Só conheço a Maria", alternates: ["Eu só conheço a Maria"], difficulty: .intermediate),
-    ConversationScenario(situation: "Travel", prompt: "Quanto tempo ficaste em Portugal?", instruction: "Say you stayed for two weeks", answer: "Fiquei duas semanas", alternates: ["Eu fiquei duas semanas", "Fiquei por duas semanas"], difficulty: .intermediate),
-    ConversationScenario(situation: "Restaurant", prompt: "Como estava a comida?", instruction: "Say the food was delicious", answer: "A comida estava deliciosa", alternates: ["Estava deliciosa", "Foi deliciosa"], difficulty: .intermediate),
-    ConversationScenario(situation: "At home", prompt: "Quem cozinhou hoje?", instruction: "Say your mother cooked", answer: "A minha mãe cozinhou", alternates: ["Cozinhou a minha mãe", "Foi a minha mãe que cozinhou"], difficulty: .intermediate),
-
-    ConversationScenario(situation: "Job interview", prompt: "Porque é que queres trabalhar aqui?", instruction: "Say because you believe in the company", answer: "Porque acredito na empresa", alternates: ["Porque eu acredito na empresa"], difficulty: .advanced),
-    ConversationScenario(situation: "Debate", prompt: "O que achas sobre isso?", instruction: "Say you think it depends on the situation", answer: "Acho que depende da situação", alternates: ["Penso que depende da situação", "Depende da situação"], difficulty: .advanced),
-    ConversationScenario(situation: "Giving advice", prompt: "Estou muito stressado.", instruction: "Say he should rest more", answer: "Devias descansar mais", alternates: ["Deverias descansar mais", "Precisas de descansar mais"], difficulty: .advanced),
-    ConversationScenario(situation: "Hypothetical", prompt: "Se pudesses viajar para qualquer lugar...", instruction: "Say you would go to Brazil", answer: "Iria para o Brasil", alternates: ["Eu iria para o Brasil", "Viajaria para o Brasil"], difficulty: .advanced),
-    ConversationScenario(situation: "Past experience", prompt: "Conta sobre a tua infância.", instruction: "Say when you were young you lived in the countryside", answer: "Quando era jovem, morava no campo", alternates: ["Quando eu era jovem, vivia no campo", "Vivia no campo quando era jovem"], difficulty: .advanced),
-    ConversationScenario(situation: "Expressing doubt", prompt: "Ela disse que vai chegar cedo.", instruction: "Say you doubt she will arrive on time", answer: "Duvido que ela chegue a tempo", alternates: ["Eu duvido que chegue a tempo"], difficulty: .advanced),
-    ConversationScenario(situation: "Polite request", prompt: "Preciso de uma informação.", instruction: "Say you could help if he wants", answer: "Posso ajudar, se quiseres", alternates: ["Poderia ajudar, se quiseres", "Eu posso ajudar se quiseres"], difficulty: .advanced),
-    ConversationScenario(situation: "Explaining", prompt: "Porque é que aprendeste português?", instruction: "Say you always wanted to understand the culture", answer: "Sempre quis compreender a cultura", alternates: ["Sempre quis entender a cultura", "Porque sempre quis compreender a cultura"], difficulty: .advanced),
-]

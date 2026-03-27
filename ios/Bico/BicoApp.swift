@@ -6,6 +6,7 @@ struct BicoApp: App {
     @State private var progressService = ProgressService()
     @State private var engagementService = EngagementService()
     @State private var speechService = SpeechService()
+    @State private var verbGlossaryService = VerbGlossaryService()
     @AppStorage("selectedDialect") private var dialectRaw: String = ""
 
     var body: some Scene {
@@ -16,6 +17,7 @@ struct BicoApp: App {
                     .environment(progressService)
                     .environment(engagementService)
                     .environment(speechService)
+                    .environment(verbGlossaryService)
                     .tint(Pico.deepForestGreen)
             } else {
                 OnboardingView(onDialectSelected: { dialect in

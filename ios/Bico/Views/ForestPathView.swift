@@ -321,11 +321,12 @@ struct ForestPathView: View {
             } else if !isUnlocked {
                 Image(systemName: "lock.fill")
                     .font(.system(size: 13))
-                    .foregroundStyle(.white.opacity(0.25))
+                    .foregroundStyle(Pico.deepForestGreen.opacity(0.3))
             } else {
                 Text("\(level.level)")
                     .font(.system(.title3, design: .rounded, weight: .heavy))
                     .foregroundStyle(isCurrent ? Pico.amber : .white)
+                    .shadow(color: .black.opacity(0.2), radius: 1, y: 1)
             }
         }
     }
@@ -333,14 +334,14 @@ struct ForestPathView: View {
     private func nodeLabel(level: Level, isUnlocked: Bool, isCompleted: Bool, isCurrent: Bool) -> some View {
         VStack(spacing: 3) {
             Text(level.tense)
-                .font(.system(size: 12, weight: .semibold, design: .rounded))
+                .font(.system(size: 13, weight: .bold, design: .rounded))
                 .foregroundStyle(
                     isUnlocked
-                        ? (isCurrent ? Pico.amber : .white.opacity(0.8))
-                        : .white.opacity(0.3)
+                        ? (isCurrent ? Pico.amber : Pico.deepForestGreen)
+                        : Pico.deepForestGreen.opacity(0.35)
                 )
                 .lineLimit(1)
-                .shadow(color: .black.opacity(0.5), radius: 2, y: 1)
+                .shadow(color: .white.opacity(0.6), radius: 2, y: 1)
 
             if level.isSpecial {
                 HStack(spacing: 3) {
@@ -350,7 +351,7 @@ struct ForestPathView: View {
                         .font(.system(size: 9, weight: .bold, design: .rounded))
                 }
                 .foregroundStyle(Pico.amber)
-                .shadow(color: .black.opacity(0.3), radius: 1, y: 1)
+                .shadow(color: .white.opacity(0.5), radius: 1, y: 1)
             }
 
             if isCompleted {
@@ -363,7 +364,7 @@ struct ForestPathView: View {
                             .font(.system(size: 9, weight: .bold, design: .rounded).monospacedDigit())
                     }
                     .foregroundStyle(Pico.amber)
-                    .shadow(color: .black.opacity(0.3), radius: 1, y: 1)
+                    .shadow(color: .white.opacity(0.5), radius: 1, y: 1)
                 }
             }
         }
@@ -406,7 +407,7 @@ struct ForestPathView: View {
             } else {
                 context.stroke(
                     path,
-                    with: .color(.white.opacity(0.08)),
+                    with: .color(Pico.deepForestGreen.opacity(0.15)),
                     style: StrokeStyle(lineWidth: 1.5, lineCap: .round, dash: [5, 7])
                 )
             }
@@ -430,7 +431,7 @@ struct ForestPathView: View {
             }
         }
         .frame(width: 40, height: 40)
-        .shadow(color: .black.opacity(0.3), radius: 4, y: 2)
+        .shadow(color: Pico.deepForestGreen.opacity(0.2), radius: 4, y: 2)
         .offset(x: 16, y: 2)
         .offset(y: pulseActive ? -3 : 3)
         .animation(.easeInOut(duration: 1.8).repeatForever(autoreverses: true), value: pulseActive)
@@ -527,13 +528,13 @@ struct ForestPathView: View {
                 }
             }
             .frame(width: 56, height: 56)
-            .shadow(color: .black.opacity(0.3), radius: 6, y: 3)
+            .shadow(color: Pico.deepForestGreen.opacity(0.15), radius: 6, y: 3)
 
             Text("Your Journey")
                 .font(.system(.title3, design: .serif, weight: .bold))
                 .tracking(-0.3)
-                .foregroundStyle(.white)
-                .shadow(color: .black.opacity(0.3), radius: 2, y: 1)
+                .foregroundStyle(Pico.deepForestGreen)
+                .shadow(color: .white.opacity(0.5), radius: 2, y: 1)
 
             let total = 43
             let done = progressService.completedLevelCount
@@ -547,7 +548,7 @@ struct ForestPathView: View {
 
             ZStack(alignment: .leading) {
                 Capsule()
-                    .fill(.white.opacity(0.1))
+                    .fill(Pico.deepForestGreen.opacity(0.1))
                     .frame(width: 120, height: 5)
 
                 Capsule()
@@ -564,7 +565,7 @@ struct ForestPathView: View {
 
             Text("\(done)/\(total)")
                 .font(.system(.caption2, design: .rounded, weight: .semibold).monospacedDigit())
-                .foregroundStyle(.white.opacity(0.5))
+                .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
         }
     }
 
@@ -590,12 +591,12 @@ struct ForestPathView: View {
 
             Text("The Summit")
                 .font(.system(.headline, design: .serif, weight: .bold))
-                .foregroundStyle(.white)
-                .shadow(color: .black.opacity(0.3), radius: 2, y: 1)
+                .foregroundStyle(Pico.deepForestGreen)
+                .shadow(color: .white.opacity(0.5), radius: 2, y: 1)
 
             Text("Master all 43 levels to conquer Portuguese verbs")
                 .font(.system(.caption, design: .rounded))
-                .foregroundStyle(.white.opacity(0.4))
+                .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
                 .multilineTextAlignment(.center)
         }
     }
@@ -622,15 +623,15 @@ struct ForestPathView: View {
                     .textCase(.uppercase)
                     .tracking(1)
             }
-            .foregroundStyle(.white.opacity(0.7))
+            .foregroundStyle(Pico.deepForestGreen.opacity(0.7))
             .padding(.horizontal, 14)
             .padding(.vertical, 6)
-            .background(.ultraThinMaterial.opacity(0.3), in: Capsule())
+            .background(Pico.cardSurface.opacity(0.7), in: Capsule())
             .overlay(
                 Capsule()
-                    .strokeBorder(.white.opacity(0.1), lineWidth: 0.5)
+                    .strokeBorder(Pico.leafGreen.opacity(0.2), lineWidth: 0.5)
             )
-            .shadow(color: .black.opacity(0.2), radius: 4, y: 2)
+            .shadow(color: Pico.deepForestGreen.opacity(0.08), radius: 4, y: 2)
 
             Rectangle()
                 .fill(

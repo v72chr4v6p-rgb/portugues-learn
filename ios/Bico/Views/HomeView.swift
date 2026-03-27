@@ -128,14 +128,15 @@ struct HomeView: View {
 
     private var botanicalHeader: some View {
         ZStack(alignment: .bottomLeading) {
-            Color(red: 0.92, green: 0.91, blue: 0.88)
-                .frame(height: 220)
-                .overlay {
+            Pico.plaster
+                .frame(height: 200)
+                .overlay(alignment: .topTrailing) {
                     AsyncImage(url: URL(string: Pico.monsteraHeaderURL)) { phase in
                         if let image = phase.image {
                             image
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
+                                .opacity(0.35)
                         }
                     }
                     .allowsHitTesting(false)
@@ -144,14 +145,14 @@ struct HomeView: View {
 
             LinearGradient(
                 stops: [
-                    .init(color: Color.clear, location: 0.3),
-                    .init(color: Pico.plaster.opacity(0.6), location: 0.7),
-                    .init(color: Pico.plaster, location: 1.0)
+                    .init(color: Color.clear, location: 0.0),
+                    .init(color: Pico.plaster.opacity(0.4), location: 0.5),
+                    .init(color: Pico.plaster, location: 0.85)
                 ],
                 startPoint: .top,
                 endPoint: .bottom
             )
-            .frame(height: 220)
+            .frame(height: 200)
             .allowsHitTesting(false)
 
             HStack(alignment: .bottom, spacing: 14) {
@@ -164,8 +165,8 @@ struct HomeView: View {
                             .foregroundStyle(Pico.deepForestGreen)
                     }
                 }
-                .frame(width: 48, height: 48)
-                .offset(x: 4)
+                .frame(width: 52, height: 52)
+                .shadow(color: Pico.deepForestGreen.opacity(0.1), radius: 6, y: 3)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(greetingText)

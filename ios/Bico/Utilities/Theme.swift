@@ -52,8 +52,8 @@ enum Pico {
 
     // MARK: - Mascot & Backgrounds
     static let forestBgURL = "https://r2-pub.rork.com/generated-images/32865e6b-8ef7-4997-bd5f-6234f3e2ea07.png"
-    static let bicoMascotURL = "https://r2-pub.rork.com/generated-images/9e1b1cd7-66b8-4ed8-aa1e-270a03ec6135.png"
-    static let monsteraHeaderURL = "https://r2-pub.rork.com/generated-images/88f9ea67-b19e-45a0-9a99-72dd8d9a1864.png"
+    static let bicoMascotURL = "https://r2-pub.rork.com/generated-images/89a0eb3c-d924-4112-84c8-4bb576bc21be.png"
+    static let monsteraHeaderURL = "https://r2-pub.rork.com/generated-images/23dd5673-14a7-4123-b34e-22fd5a777693.png"
     static let leafVeinTextureURL = "https://r2-pub.rork.com/generated-images/b7759818-d0cc-48d7-abfd-19f6d17dac3f.png"
     static let stoneArchTextureURL = "https://r2-pub.rork.com/generated-images/c8879eec-1612-4197-9656-91b31e12291a.png"
 
