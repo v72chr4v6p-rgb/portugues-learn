@@ -1,5 +1,6 @@
 import SwiftUI
 import AVFoundation
+import AudioToolbox
 
 @Observable
 @MainActor
@@ -134,8 +135,10 @@ class QuizViewModel {
         if isCorrect == true {
             score += useTimer ? max(10, timeRemaining) : 10
             HapticService.success()
+            AudioServicesPlaySystemSound(1025)
         } else {
             HapticService.error()
+            AudioServicesPlaySystemSound(1053)
             withAnimation(.spring(response: 0.2, dampingFraction: 0.2)) {
                 shakeCount += 1
             }

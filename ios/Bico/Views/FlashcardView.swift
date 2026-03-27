@@ -111,7 +111,7 @@ struct FlashcardView: View {
                     .overlay {
                         Text(card.verb.infinitive)
                             .font(.system(.title2, design: .rounded, weight: .bold))
-                            .foregroundStyle(Pico.deepForestGreen.opacity(0.2))
+                            .foregroundStyle(Pico.darkTextSecondary.opacity(0.3))
                     }
                     .scaleEffect(scale)
                     .offset(y: yOff)
@@ -460,7 +460,7 @@ struct FlashcardView: View {
             Text("Session Complete!")
                 .font(.system(.title, design: .serif, weight: .bold))
                 .tracking(-0.3)
-                .foregroundStyle(Pico.deepForestGreen)
+                .foregroundStyle(Pico.darkText)
 
             HStack(spacing: 32) {
                 VStack(spacing: 6) {

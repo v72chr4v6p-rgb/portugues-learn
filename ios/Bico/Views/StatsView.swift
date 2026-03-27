@@ -46,7 +46,7 @@ struct StatsView: View {
             HStack(alignment: .firstTextBaseline, spacing: 2) {
                 Text(value)
                     .font(.system(.title2, design: .rounded, weight: .bold))
-                    .foregroundStyle(Pico.deepForestGreen)
+                    .foregroundStyle(Pico.darkText)
                 if let total {
                     Text(total)
                         .font(.system(.caption, design: .rounded))
@@ -56,7 +56,7 @@ struct StatsView: View {
 
             Text(label)
                 .font(.system(.caption, design: .rounded, weight: .medium))
-                .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
+                .foregroundStyle(Pico.darkTextSecondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .picoCard()
@@ -67,16 +67,16 @@ struct StatsView: View {
             Text("Streak Record")
                 .font(.system(.headline, design: .serif, weight: .bold))
                 .tracking(-0.3)
-                .foregroundStyle(Pico.deepForestGreen)
+                .foregroundStyle(Pico.darkText)
 
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Best Streak")
                         .font(.system(.subheadline, design: .rounded))
-                        .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
+                        .foregroundStyle(Pico.darkTextSecondary)
                     Text("\(engagementService.bestDayStreak) days in a row")
                         .font(.system(.title3, design: .rounded, weight: .bold))
-                        .foregroundStyle(Pico.deepForestGreen)
+                        .foregroundStyle(Pico.darkText)
                 }
 
                 Spacer()
@@ -96,7 +96,7 @@ struct StatsView: View {
             Text("Level Progress")
                 .font(.system(.headline, design: .serif, weight: .bold))
                 .tracking(-0.3)
-                .foregroundStyle(Pico.deepForestGreen)
+                .foregroundStyle(Pico.darkText)
 
             ForEach(ForestZone.allCases, id: \.self) { zone in
                 VStack(alignment: .leading, spacing: 8) {
@@ -106,7 +106,7 @@ struct StatsView: View {
                             .foregroundStyle(Pico.leafGreen)
                         Text(zone.rawValue)
                             .font(.system(.subheadline, design: .rounded, weight: .semibold))
-                            .foregroundStyle(Pico.deepForestGreen)
+                            .foregroundStyle(Pico.darkText)
                     }
 
                     let range = zone.levelRange
@@ -125,7 +125,7 @@ struct StatsView: View {
 
                         Text("\(completed)/\(total)")
                             .font(.system(.caption, design: .rounded, weight: .semibold).monospacedDigit())
-                            .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
+                            .foregroundStyle(Pico.darkTextSecondary)
                             .frame(width: 40, alignment: .trailing)
                     }
                 }

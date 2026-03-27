@@ -63,13 +63,13 @@ struct ConversationPracticeView: View {
                     Text("Conversation Practice")
                         .font(.system(.title2, design: .serif, weight: .bold))
                         .tracking(-0.3)
-                        .foregroundStyle(Pico.deepForestGreen)
+                        .foregroundStyle(Pico.darkText)
 
                     Text(dialect == .brazilian
                          ? "Practice real-world Brazilian Portuguese conversations"
                          : "Practice real-world European Portuguese conversations")
                         .font(.system(.subheadline, design: .rounded))
-                        .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
+                        .foregroundStyle(Pico.darkTextSecondary)
                         .multilineTextAlignment(.center)
                 }
                 .padding(.top, 20)
@@ -78,7 +78,7 @@ struct ConversationPracticeView: View {
                     Text("Difficulty")
                         .font(.system(.headline, design: .serif, weight: .bold))
                         .tracking(-0.3)
-                        .foregroundStyle(Pico.deepForestGreen)
+                        .foregroundStyle(Pico.darkText)
 
                     ForEach(Difficulty.allCases, id: \.self) { diff in
                         Button {
@@ -94,10 +94,10 @@ struct ConversationPracticeView: View {
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(diff.title)
                                         .font(.system(.subheadline, design: .rounded, weight: .semibold))
-                                        .foregroundStyle(Pico.deepForestGreen)
+                                        .foregroundStyle(Pico.darkText)
                                     Text(diff.subtitle)
                                         .font(.system(.caption, design: .rounded))
-                                        .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
+                                        .foregroundStyle(Pico.darkTextSecondary)
                                 }
 
                                 Spacer()
@@ -172,7 +172,7 @@ struct ConversationPracticeView: View {
                 VStack(spacing: 16) {
                     Text(scenario.situation)
                         .font(.system(.caption, design: .rounded, weight: .bold))
-                        .foregroundStyle(Pico.deepForestGreen)
+                        .foregroundStyle(Pico.darkText)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 4)
                         .background(Pico.deepForestGreen.opacity(0.08), in: Capsule())
@@ -184,7 +184,7 @@ struct ConversationPracticeView: View {
 
                         Text(scenario.prompt)
                             .font(.system(.title3, design: .rounded, weight: .semibold))
-                            .foregroundStyle(Pico.deepForestGreen)
+                            .foregroundStyle(Pico.darkText)
                             .multilineTextAlignment(.center)
 
                         Button {
@@ -200,7 +200,7 @@ struct ConversationPracticeView: View {
 
                     Text(scenario.instruction)
                         .font(.system(.subheadline, design: .rounded))
-                        .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
+                        .foregroundStyle(Pico.darkTextSecondary)
                         .multilineTextAlignment(.center)
                 }
                 .padding(24)
@@ -287,7 +287,7 @@ struct ConversationPracticeView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(isCorrect ? "Correct!" : "Good try!")
                         .font(.system(.headline, design: .rounded))
-                        .foregroundStyle(Pico.deepForestGreen)
+                        .foregroundStyle(Pico.darkText)
                     if currentScenario < scenarios.count {
                         Text("Answer: \(scenarios[currentScenario].answer)")
                             .font(.system(.subheadline, design: .rounded, weight: .semibold))
@@ -336,7 +336,7 @@ struct ConversationPracticeView: View {
             Text("Conversation Done!")
                 .font(.system(.title, design: .serif, weight: .bold))
                 .tracking(-0.3)
-                .foregroundStyle(Pico.deepForestGreen)
+                .foregroundStyle(Pico.darkText)
 
             Text("+\(score) XP")
                 .font(.system(.title2, design: .rounded, weight: .bold))

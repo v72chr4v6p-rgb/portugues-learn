@@ -48,7 +48,7 @@ struct SettingsView: View {
             HStack {
                 Text("Speech Speed")
                     .font(.system(.subheadline, design: .rounded, weight: .medium))
-                    .foregroundStyle(Pico.deepForestGreen)
+                    .foregroundStyle(Pico.darkText)
                 Spacer()
                 Picker("Speed", selection: $selectedSpeed) {
                     ForEach(SpeechService.Speed.allCases, id: \.self) { speed in
@@ -80,10 +80,10 @@ struct SettingsView: View {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(label)
                                     .font(.system(.subheadline, design: .rounded, weight: .semibold))
-                                    .foregroundStyle(Pico.deepForestGreen)
+                                    .foregroundStyle(Pico.darkText)
                                 Text("\(goal) XP per day")
                                     .font(.system(.caption, design: .rounded))
-                                    .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
+                                    .foregroundStyle(Pico.darkTextSecondary)
                             }
                             Spacer()
                             if engagement.dailyXPGoal == goal {
@@ -112,10 +112,10 @@ struct SettingsView: View {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(dialect.displayName)
                                 .font(.system(.subheadline, design: .rounded, weight: .semibold))
-                                .foregroundStyle(Pico.deepForestGreen)
+                                .foregroundStyle(Pico.darkText)
                             Text(dialect.subtitle)
                                 .font(.system(.caption, design: .rounded))
-                                .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
+                                .foregroundStyle(Pico.darkTextSecondary)
                         }
                         Spacer()
                     }
@@ -168,10 +168,10 @@ struct SettingsView: View {
                 .foregroundStyle(color)
             Text(value)
                 .font(.system(.title3, design: .rounded, weight: .bold))
-                .foregroundStyle(Pico.deepForestGreen)
+                .foregroundStyle(Pico.darkText)
             Text(label)
                 .font(.system(.caption, design: .rounded))
-                .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
+                .foregroundStyle(Pico.darkTextSecondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .picoCard()
@@ -206,11 +206,11 @@ struct SettingsView: View {
         HStack(spacing: 8) {
             Image(systemName: icon)
                 .font(.caption)
-                .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
+                .foregroundStyle(Pico.darkTextSecondary)
             Text(title)
                 .font(.system(.subheadline, design: .serif, weight: .bold))
                 .tracking(-0.3)
-                .foregroundStyle(Pico.deepForestGreen.opacity(0.6))
+                .foregroundStyle(Pico.darkText)
         }
     }
 }

@@ -50,8 +50,18 @@ enum Pico {
     static let warmWhite = Color(red: 0.99, green: 0.97, blue: 0.95)
     static let mutedSage = Color(red: 0.45, green: 0.55, blue: 0.4)
 
+    // MARK: - Path Colors
+    static let pistachio = Color(red: 0.82, green: 0.88, blue: 0.78) // soft pistachio for path bg
+    static let pistachioDark = Color(red: 0.72, green: 0.80, blue: 0.68)
+    static let pistachioLight = Color(red: 0.88, green: 0.92, blue: 0.84)
+
+    // MARK: - High Contrast Text
+    static let darkText = Color(red: 0.10, green: 0.10, blue: 0.10) // near-black for maximum contrast
+    static let darkTextSecondary = Color(red: 0.25, green: 0.25, blue: 0.25)
+
     // MARK: - Mascot & Backgrounds
     static let forestBgURL = "https://r2-pub.rork.com/generated-images/32865e6b-8ef7-4997-bd5f-6234f3e2ea07.png"
+    static let kingfisherMascotURL = "https://r2-pub.rork.com/generated-images/2b35f4b3-ef9f-4520-8599-92f35c52bd5a.png"
     static let bicoMascotURL = "https://r2-pub.rork.com/generated-images/89a0eb3c-d924-4112-84c8-4bb576bc21be.png"
     static let monsteraHeaderURL = "https://r2-pub.rork.com/generated-images/23dd5673-14a7-4123-b34e-22fd5a777693.png"
     static let leafVeinTextureURL = "https://r2-pub.rork.com/generated-images/b7759818-d0cc-48d7-abfd-19f6d17dac3f.png"

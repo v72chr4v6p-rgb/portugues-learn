@@ -71,11 +71,11 @@ struct PracticeView: View {
                     Text("Conjugation Practice")
                         .font(.system(.title2, design: .serif, weight: .bold))
                         .tracking(-0.3)
-                        .foregroundStyle(Pico.deepForestGreen)
+                        .foregroundStyle(Pico.darkText)
 
                     Text("Test your knowledge across tenses and pronouns")
                         .font(.system(.subheadline, design: .rounded))
-                        .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
+                        .foregroundStyle(Pico.darkTextSecondary)
                         .multilineTextAlignment(.center)
                 }
                 .padding(.top, 20)
@@ -84,7 +84,7 @@ struct PracticeView: View {
                     Text("Select Tense")
                         .font(.system(.headline, design: .serif, weight: .bold))
                         .tracking(-0.3)
-                        .foregroundStyle(Pico.deepForestGreen)
+                        .foregroundStyle(Pico.darkText)
 
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
@@ -122,7 +122,7 @@ struct PracticeView: View {
                     Text("Practice Mode")
                         .font(.system(.headline, design: .serif, weight: .bold))
                         .tracking(-0.3)
-                        .foregroundStyle(Pico.deepForestGreen)
+                        .foregroundStyle(Pico.darkText)
 
                     HStack(spacing: 12) {
                         ForEach(PracticeMode.allCases, id: \.self) { mode in
@@ -204,12 +204,12 @@ struct PracticeView: View {
                         .foregroundStyle(.orange)
                     Text("\(vm.score)")
                         .font(.system(.subheadline, design: .rounded, weight: .bold).monospacedDigit())
-                        .foregroundStyle(Pico.deepForestGreen)
+                        .foregroundStyle(Pico.darkText)
                 }
                 Spacer()
                 Text("\(vm.currentIndex + 1) / \(vm.practiceItems.count)")
                     .font(.system(.subheadline, design: .rounded, weight: .medium).monospacedDigit())
-                    .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
+                    .foregroundStyle(Pico.darkTextSecondary)
             }
             .padding(.horizontal, 20)
             .padding(.top, 10)
@@ -256,12 +256,12 @@ struct PracticeView: View {
 
                 Text(item.verb.infinitive)
                     .font(.system(size: 34, weight: .bold, design: .rounded))
-                    .foregroundStyle(Pico.deepForestGreen)
+                    .foregroundStyle(Pico.darkText)
 
                 HStack(spacing: 10) {
                     Text(item.verb.translation)
                         .font(.system(.subheadline, design: .rounded))
-                        .foregroundStyle(Pico.deepForestGreen.opacity(0.4))
+                        .foregroundStyle(Pico.darkTextSecondary)
 
                     Button {
                         speechService.speak(item.verb.infinitive, dialect: dialect)
@@ -399,10 +399,10 @@ struct PracticeView: View {
     }
 
     private func mcOptionFg(_ option: String, vm: PracticeViewModel) -> Color {
-        guard vm.showingResult else { return Pico.deepForestGreen }
+        guard vm.showingResult else { return Pico.darkText }
         if option.lowercased() == vm.correctAnswer.lowercased() { return Pico.leafGreen }
         if option == vm.userAnswer && vm.isCorrect == false { return .red }
-        return Pico.deepForestGreen.opacity(0.4)
+        return Pico.darkTextSecondary
     }
 
     private func awardPracticeXP(vm: PracticeViewModel) {
@@ -425,7 +425,7 @@ struct PracticeView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(vm.isCorrect == true ? "Correct!" : "Not quite")
                         .font(.system(.headline, design: .rounded))
-                        .foregroundStyle(Pico.deepForestGreen)
+                        .foregroundStyle(Pico.darkText)
                     if vm.isCorrect == false {
                         Text(vm.correctAnswer)
                             .font(.system(.subheadline, design: .rounded, weight: .semibold))
@@ -478,7 +478,7 @@ struct PracticeView: View {
             Text("Practice Complete!")
                 .font(.system(.title, design: .serif, weight: .bold))
                 .tracking(-0.3)
-                .foregroundStyle(Pico.deepForestGreen)
+                .foregroundStyle(Pico.darkText)
 
             VStack(spacing: 16) {
                 HStack(spacing: 24) {
@@ -490,7 +490,7 @@ struct PracticeView: View {
                 let pct = vm.totalAnswered > 0 ? Int(Double(vm.totalCorrect) / Double(vm.totalAnswered) * 100) : 0
                 Text("\(pct)% Accuracy")
                     .font(.system(.headline, design: .rounded))
-                    .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
+                    .foregroundStyle(Pico.darkTextSecondary)
             }
             .picoCard()
 

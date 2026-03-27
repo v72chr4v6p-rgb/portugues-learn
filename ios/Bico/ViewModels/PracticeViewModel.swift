@@ -1,5 +1,6 @@
 import SwiftUI
 import AVFoundation
+import AudioToolbox
 
 @Observable
 @MainActor
@@ -151,8 +152,10 @@ class PracticeViewModel {
             score += 10
             totalCorrect += 1
             HapticService.success()
+            AudioServicesPlaySystemSound(1025)
         } else {
             HapticService.error()
+            AudioServicesPlaySystemSound(1053)
         }
     }
 

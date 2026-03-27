@@ -48,12 +48,12 @@ struct CultureView: View {
                     Text(dialect == .brazilian ? "Cultura Brasileira" : "Cultura Portuguesa")
                         .font(.system(.title3, design: .serif, weight: .bold))
                         .tracking(-0.3)
-                        .foregroundStyle(Pico.deepForestGreen)
+                        .foregroundStyle(Pico.darkText)
                     Text(dialect == .brazilian
                          ? "Discover the vibrant culture behind Brazilian Portuguese"
                          : "Explore the rich heritage of European Portuguese")
                         .font(.system(.subheadline, design: .rounded))
-                        .foregroundStyle(Pico.deepForestGreen.opacity(0.6))
+                        .foregroundStyle(Pico.darkTextSecondary)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -70,7 +70,7 @@ struct CultureView: View {
                 Text("Useful Phrases")
                     .font(.system(.headline, design: .serif, weight: .bold))
                     .tracking(-0.3)
-                    .foregroundStyle(Pico.deepForestGreen)
+                    .foregroundStyle(Pico.darkText)
             }
 
             let phrases = dialect == .brazilian ? brazilianPhrases : europeanPhrases
@@ -79,10 +79,10 @@ struct CultureView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(phrase.portuguese)
                             .font(.system(.body, design: .rounded, weight: .semibold))
-                            .foregroundStyle(Pico.deepForestGreen)
+                            .foregroundStyle(Pico.darkText)
                         Text(phrase.english)
                             .font(.system(.caption, design: .rounded))
-                            .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
+                            .foregroundStyle(Pico.darkTextSecondary)
                         if !phrase.context.isEmpty {
                             Text(phrase.context)
                                 .font(.system(.caption2, design: .rounded))
@@ -135,10 +135,10 @@ struct CultureView: View {
                         Text(section.title)
                             .font(.system(.headline, design: .serif, weight: .bold))
                             .tracking(-0.3)
-                            .foregroundStyle(Pico.deepForestGreen)
+                            .foregroundStyle(Pico.darkText)
                         Text(section.subtitle)
                             .font(.system(.caption, design: .rounded))
-                            .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
+                            .foregroundStyle(Pico.darkTextSecondary)
                     }
 
                     Spacer()
@@ -191,7 +191,7 @@ struct CultureView: View {
                 Text("Social Etiquette")
                     .font(.system(.headline, design: .serif, weight: .bold))
                     .tracking(-0.3)
-                    .foregroundStyle(Pico.deepForestGreen)
+                    .foregroundStyle(Pico.darkText)
             }
 
             let tips = dialect == .brazilian ? brazilianEtiquette : europeanEtiquette

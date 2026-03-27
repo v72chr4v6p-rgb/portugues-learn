@@ -128,35 +128,33 @@ struct HomeView: View {
 
     private var botanicalHeader: some View {
         ZStack(alignment: .bottomLeading) {
-            Pico.plaster
-                .frame(height: 200)
-                .overlay(alignment: .topTrailing) {
-                    AsyncImage(url: URL(string: Pico.monsteraHeaderURL)) { phase in
-                        if let image = phase.image {
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .opacity(0.35)
-                        }
+            Color(Pico.plaster)
+                .frame(height: 220)
+                .overlay {
+                    if let img = UIImage(named: "rainforest_jungle_header") {
+                        Image(uiImage: img)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .opacity(0.45)
                     }
-                    .allowsHitTesting(false)
                 }
+                .allowsHitTesting(false)
                 .clipped()
 
             LinearGradient(
                 stops: [
                     .init(color: Color.clear, location: 0.0),
-                    .init(color: Pico.plaster.opacity(0.4), location: 0.5),
+                    .init(color: Pico.plaster.opacity(0.3), location: 0.4),
                     .init(color: Pico.plaster, location: 0.85)
                 ],
                 startPoint: .top,
                 endPoint: .bottom
             )
-            .frame(height: 200)
+            .frame(height: 220)
             .allowsHitTesting(false)
 
             HStack(alignment: .bottom, spacing: 14) {
-                AsyncImage(url: URL(string: Pico.bicoMascotURL)) { phase in
+                AsyncImage(url: URL(string: Pico.kingfisherMascotURL)) { phase in
                     if let image = phase.image {
                         image.resizable().aspectRatio(contentMode: .fit)
                     } else {
@@ -166,16 +164,16 @@ struct HomeView: View {
                     }
                 }
                 .frame(width: 52, height: 52)
-                .shadow(color: Pico.deepForestGreen.opacity(0.1), radius: 6, y: 3)
+                .shadow(color: Pico.deepForestGreen.opacity(0.15), radius: 8, y: 3)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(greetingText)
                         .font(.system(.largeTitle, design: .serif, weight: .bold))
                         .tracking(-0.5)
-                        .foregroundStyle(Pico.deepForestGreen)
+                        .foregroundStyle(Pico.darkText)
                     Text(motivationalText)
                         .font(.system(.subheadline, design: .rounded))
-                        .foregroundStyle(Pico.deepForestGreen.opacity(0.6))
+                        .foregroundStyle(Pico.darkTextSecondary)
                 }
             }
             .padding(.horizontal, Pico.spacingXL)
@@ -225,10 +223,10 @@ struct HomeView: View {
                     } else {
                         Text("\(Int(engagementService.dailyProgress * 100))")
                             .font(.system(.title3, design: .rounded, weight: .heavy))
-                            .foregroundStyle(Pico.deepForestGreen)
+                            .foregroundStyle(Pico.darkText)
                         Text("%")
                             .font(.system(.caption2, design: .rounded, weight: .semibold))
-                            .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
+                            .foregroundStyle(Pico.darkTextSecondary)
                     }
                 }
             }
@@ -237,11 +235,11 @@ struct HomeView: View {
                 Text("Daily Goal")
                     .font(.system(.headline, design: .serif, weight: .bold))
                     .tracking(-0.3)
-                    .foregroundStyle(Pico.deepForestGreen)
+                    .foregroundStyle(Pico.darkText)
 
                 Text("\(engagementService.todayXP) / \(engagementService.dailyXPGoal) XP")
                     .font(.system(.subheadline, design: .rounded, weight: .medium))
-                    .foregroundStyle(Pico.deepForestGreen.opacity(0.6))
+                    .foregroundStyle(Pico.darkTextSecondary)
 
                 if engagementService.dailyGoalMet {
                     HStack(spacing: 4) {
@@ -269,10 +267,10 @@ struct HomeView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("\(engagementService.dayStreak)")
                         .font(.system(.title3, design: .rounded, weight: .bold).monospacedDigit())
-                        .foregroundStyle(Pico.deepForestGreen)
+                        .foregroundStyle(Pico.darkText)
                     Text("Day Streak")
                         .font(.system(.caption, design: .rounded))
-                        .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
+                        .foregroundStyle(Pico.darkTextSecondary)
                 }
                 Spacer()
             }
@@ -285,10 +283,10 @@ struct HomeView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("\(engagementService.xp)")
                         .font(.system(.title3, design: .rounded, weight: .bold).monospacedDigit())
-                        .foregroundStyle(Pico.deepForestGreen)
+                        .foregroundStyle(Pico.darkText)
                     Text("Total XP")
                         .font(.system(.caption, design: .rounded))
-                        .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
+                        .foregroundStyle(Pico.darkTextSecondary)
                 }
                 Spacer()
             }
@@ -516,7 +514,7 @@ struct HomeView: View {
             Text("Recently Practiced")
                 .font(.system(.headline, design: .serif, weight: .bold))
                 .tracking(-0.3)
-                .foregroundStyle(Pico.deepForestGreen)
+                .foregroundStyle(Pico.darkText)
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
@@ -531,18 +529,18 @@ struct HomeView: View {
                                         .foregroundStyle(Pico.leafGreen)
                                     Text("Lvl \(level.level)")
                                         .font(.system(.caption, design: .rounded, weight: .bold).monospacedDigit())
-                                        .foregroundStyle(Pico.deepForestGreen)
+                                        .foregroundStyle(Pico.darkText)
                                 }
                                 Text(level.tense)
                                     .font(.system(.subheadline, design: .rounded, weight: .semibold))
-                                    .foregroundStyle(Pico.deepForestGreen)
+                                    .foregroundStyle(Pico.darkText)
                                     .lineLimit(1)
 
                                 let prog = progressService.progress(for: level.level)
                                 let acc = prog.totalAttempts > 0 ? Int(Double(prog.correctAttempts) / Double(prog.totalAttempts) * 100) : 0
                                 Text("\(acc)% accuracy")
                                     .font(.system(.caption2, design: .rounded))
-                                    .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
+                                    .foregroundStyle(Pico.darkTextSecondary)
                             }
                             .padding(14)
                             .frame(width: 140)
@@ -572,10 +570,10 @@ struct HomeView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Tip of the Day")
                     .font(.system(.subheadline, design: .serif, weight: .semibold))
-                    .foregroundStyle(Pico.deepForestGreen)
+                    .foregroundStyle(Pico.darkText)
                 Text(dailyTip)
                     .font(.system(.caption, design: .rounded))
-                    .foregroundStyle(Pico.deepForestGreen.opacity(0.6))
+                    .foregroundStyle(Pico.darkTextSecondary)
                     .lineSpacing(2)
             }
         }

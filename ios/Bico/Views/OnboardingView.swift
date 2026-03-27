@@ -59,7 +59,7 @@ struct OnboardingView: View {
                 )
                 .frame(width: 160, height: 160)
 
-            AsyncImage(url: URL(string: Pico.bicoMascotURL)) { phase in
+            AsyncImage(url: URL(string: Pico.kingfisherMascotURL)) { phase in
                 if let image = phase.image {
                     image
                         .resizable()

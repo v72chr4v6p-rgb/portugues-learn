@@ -67,22 +67,22 @@ struct QuickReviewView: View {
                 VStack(spacing: 16) {
                     Text(item.2)
                         .font(.system(.caption, design: .rounded, weight: .bold))
-                        .foregroundStyle(Pico.deepForestGreen)
+                        .foregroundStyle(Pico.darkText)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 4)
                         .background(Pico.deepForestGreen.opacity(0.08), in: Capsule())
 
                     Text(item.1.displayName)
                         .font(.system(.title3, design: .rounded, weight: .medium))
-                        .foregroundStyle(Pico.deepForestGreen.opacity(0.6))
+                        .foregroundStyle(Pico.darkTextSecondary)
 
                     Text(item.0.infinitive)
                         .font(.system(size: 34, weight: .bold, design: .rounded))
-                        .foregroundStyle(Pico.deepForestGreen)
+                        .foregroundStyle(Pico.darkText)
 
                     Text(item.0.translation)
                         .font(.system(.subheadline, design: .rounded))
-                        .foregroundStyle(Pico.deepForestGreen.opacity(0.4))
+                        .foregroundStyle(Pico.darkTextSecondary)
 
                     Button {
                         speechService.speak(item.0.infinitive, dialect: dialect)
@@ -167,7 +167,7 @@ struct QuickReviewView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(isCorrect ? "Correct!" : "Not quite")
                         .font(.system(.headline, design: .rounded))
-                        .foregroundStyle(Pico.deepForestGreen)
+                        .foregroundStyle(Pico.darkText)
                     if !isCorrect && currentIndex < items.count {
                         Text(items[currentIndex].0.conjugation(for: items[currentIndex].1, dialect: dialect) ?? "")
                             .font(.system(.subheadline, design: .rounded, weight: .semibold))
@@ -204,7 +204,7 @@ struct QuickReviewView: View {
             Text("Quick Review Done!")
                 .font(.system(.title, design: .serif, weight: .bold))
                 .tracking(-0.3)
-                .foregroundStyle(Pico.deepForestGreen)
+                .foregroundStyle(Pico.darkText)
 
             Text("+\(score) XP")
                 .font(.system(.title2, design: .rounded, weight: .bold))

@@ -137,16 +137,16 @@ struct QuizView: View {
         VStack(spacing: 18) {
             Text(viewModel.currentPronoun.displayName)
                 .font(.system(.title3, design: .rounded, weight: .medium))
-                .foregroundStyle(Pico.deepForestGreen.opacity(0.6))
+                .foregroundStyle(Pico.darkTextSecondary)
 
             Text(verb.infinitive)
                 .font(.system(size: 38, weight: .bold, design: .rounded))
-                .foregroundStyle(Pico.deepForestGreen)
+                .foregroundStyle(Pico.darkText)
 
             HStack(spacing: 10) {
                 Text(verb.translation)
                     .font(.system(.subheadline, design: .rounded))
-                    .foregroundStyle(Pico.deepForestGreen.opacity(0.4))
+                    .foregroundStyle(Pico.darkTextSecondary)
 
                 Button {
                     viewModel.speak(verb.infinitive)
@@ -170,7 +170,7 @@ struct QuizView: View {
 
             Text(viewModel.level.tense)
                 .font(.system(.caption, design: .rounded, weight: .medium))
-                .foregroundStyle(Pico.deepForestGreen.opacity(0.3))
+                .foregroundStyle(Pico.darkTextSecondary)
         }
         .padding(.horizontal, 20)
     }
@@ -296,10 +296,10 @@ struct QuizView: View {
     }
 
     private func optionForeground(_ option: String) -> Color {
-        guard viewModel.showingResult else { return Pico.deepForestGreen }
+        guard viewModel.showingResult else { return Pico.darkText }
         if option.lowercased() == viewModel.correctAnswer.lowercased() { return Pico.leafGreen }
         if option == viewModel.userAnswer && viewModel.isCorrect == false { return .red }
-        return Pico.deepForestGreen.opacity(0.4)
+        return Pico.darkTextSecondary
     }
 
     private func submitCurrentAnswer() {
@@ -332,7 +332,7 @@ struct QuizView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(viewModel.isCorrect == true ? "Correct!" : "Not quite")
                         .font(.system(.headline, design: .rounded))
-                        .foregroundStyle(Pico.deepForestGreen)
+                        .foregroundStyle(Pico.darkText)
 
                     if viewModel.isCorrect == false {
                         Text(viewModel.correctAnswer)
@@ -417,11 +417,11 @@ struct QuizView: View {
                 Text("Level Complete!")
                     .font(.system(.largeTitle, design: .serif, weight: .bold))
                     .tracking(-0.5)
-                    .foregroundStyle(Pico.deepForestGreen)
+                    .foregroundStyle(Pico.darkText)
 
                 Text("You conquered the \(viewModel.level.tense)")
                     .font(.system(.subheadline, design: .rounded))
-                    .foregroundStyle(Pico.deepForestGreen.opacity(0.5))
+                    .foregroundStyle(Pico.darkTextSecondary)
             }
 
             HStack(spacing: 20) {
