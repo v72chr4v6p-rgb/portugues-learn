@@ -62,7 +62,7 @@ struct HomeView: View {
                     .padding(.bottom, 120)
                 }
             }
-            .background(Pico.plaster.ignoresSafeArea())
+            .adaptiveBackground()
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {

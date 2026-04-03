@@ -36,7 +36,7 @@ struct LessonPageView: View {
 
                 navigationBar
             }
-            .background(Pico.plaster.ignoresSafeArea())
+            .adaptiveBackground()
             .navigationTitle("Lesson")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

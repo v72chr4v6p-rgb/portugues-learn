@@ -9,62 +9,73 @@ struct ForestPathView: View {
     @State private var showJumpConfirmation: Bool = false
     @State private var appeared: Bool = false
     @State private var pulseActive: Bool = false
+    @State private var glowPhase: Bool = false
+
+    private let enchantedBgURL = "https://r2-pub.rork.com/generated-images/61b7cdd6-28f6-4690-b077-04a474078187.png"
 
     var body: some View {
         NavigationStack {
             ScrollViewReader { proxy in
                 ScrollView {
-                    VStack(spacing: 0) {
-                        pathHeader
-                            .padding(.top, 20)
-                            .padding(.bottom, 32)
+                    ZStack {
+                        forestBackground
 
-                        let sorted = verbDataService.allSortedLevels()
-                        ForEach(Array(sorted.enumerated()), id: \.element.level) { index, level in
-                            let isUnlocked = progressService.isLevelUnlocked(level.level)
-                            let isCompleted = progressService.isLevelCompleted(level.level)
-                            let isCracked = progressService.isLevelCracked(level.level)
-                            let isCurrent = isCurrentLevel(level.level, allLevels: sorted)
+                        VStack(spacing: 0) {
+                            pathHeader
+                                .padding(.top, 16)
+                                .padding(.bottom, 24)
 
-                            if shouldShowZoneLabel(level: level, index: index, allLevels: sorted) {
-                                zoneLabelView(for: level.zone)
-                                    .padding(.top, index == 0 ? 0 : 28)
-                                    .padding(.bottom, 20)
-                                    .padding(.horizontal, 20)
-                            }
+                            let sorted = verbDataService.allSortedLevels()
+                            ForEach(Array(sorted.enumerated()), id: \.element.level) { index, level in
+                                let isUnlocked = progressService.isLevelUnlocked(level.level)
+                                let isCompleted = progressService.isLevelCompleted(level.level)
+                                let isCracked = progressService.isLevelCracked(level.level)
+                                let isCurrent = isCurrentLevel(level.level, allLevels: sorted)
 
-                            ZStack {
-                                if index < sorted.count - 1 {
-                                    pathConnector(
-                                        fromIndex: index,
-                                        toIndex: index + 1,
-                                        fromCompleted: isCompleted
-                                    )
+                                if shouldShowZoneLabel(level: level, index: index, allLevels: sorted) {
+                                    zoneLabelView(for: level.zone)
+                                        .padding(.top, index == 0 ? 0 : 24)
+                                        .padding(.bottom, 16)
+                                        .padding(.horizontal, 20)
                                 }
 
-                                nodeWithTrees(
-                                    level: level,
-                                    index: index,
-                                    isUnlocked: isUnlocked,
-                                    isCompleted: isCompleted,
-                                    isCracked: isCracked,
-                                    isCurrent: isCurrent
-                                )
-                                .id(level.level)
-                            }
-                        }
+                                ZStack {
+                                    if index < sorted.count - 1 {
+                                        pathConnector(
+                                            fromIndex: index,
+                                            toIndex: index + 1,
+                                            fromCompleted: isCompleted
+                                        )
+                                    }
 
-                        summitFooter
-                            .padding(.top, 40)
-                            .padding(.bottom, 120)
+                                    pathNode(
+                                        level: level,
+                                        index: index,
+                                        isUnlocked: isUnlocked,
+                                        isCompleted: isCompleted,
+                                        isCracked: isCracked,
+                                        isCurrent: isCurrent
+                                    )
+                                    .id(level.level)
+                                }
+                            }
+
+                            summitFooter
+                                .padding(.top, 40)
+                                .padding(.bottom, 120)
+                        }
                     }
                 }
-                .background(pistachioBackground)
+                .background(Color(red: 0.06, green: 0.12, blue: 0.06))
+                .ignoresSafeArea(edges: .top)
                 .onAppear {
                     guard !appeared else { return }
                     appeared = true
                     withAnimation(.easeInOut(duration: 2.5).repeatForever(autoreverses: true)) {
                         pulseActive = true
+                    }
+                    withAnimation(.easeInOut(duration: 3.0).repeatForever(autoreverses: true)) {
+                        glowPhase = true
                     }
                     let current = currentLevelNumber(verbDataService.allSortedLevels())
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
@@ -74,23 +85,24 @@ struct ForestPathView: View {
                     }
                 }
             }
-            .navigationTitle("Path")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("The Path")
-                        .font(.system(.headline, design: .serif, weight: .bold))
+                        .font(.system(.title3, design: .serif, weight: .bold))
                         .tracking(-0.3)
-                        .foregroundStyle(Pico.darkText)
+                        .foregroundStyle(.white.opacity(0.9))
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    levelCountBadge
                 }
             }
+            .toolbarBackground(.hidden, for: .navigationBar)
+            .navigationBarTitleDisplayMode(.inline)
             .navigationDestination(item: $navigateToLevel) { level in
                 LevelDetailView(level: level, dialect: dialect)
             }
             .alert("Skip to Level \(jumpLevel?.level ?? 0)?", isPresented: $showJumpConfirmation) {
-                Button("Cancel", role: .cancel) {
-                    jumpLevel = nil
-                }
+                Button("Cancel", role: .cancel) { jumpLevel = nil }
                 Button("Jump Ahead") {
                     if let level = jumpLevel {
                         progressService.jumpToLevel(level.level)
@@ -105,28 +117,136 @@ struct ForestPathView: View {
         }
     }
 
-    // MARK: - Pistachio Background
+    // MARK: - Forest Background
 
-    private var pistachioBackground: some View {
-        LinearGradient(
-            stops: [
-                .init(color: Pico.pistachioLight, location: 0),
-                .init(color: Pico.pistachio, location: 0.3),
-                .init(color: Pico.pistachio, location: 0.7),
-                .init(color: Pico.pistachioDark.opacity(0.6), location: 1.0)
-            ],
-            startPoint: .top,
-            endPoint: .bottom
-        )
-        .ignoresSafeArea()
+    private var forestBackground: some View {
+        GeometryReader { geo in
+            Color(red: 0.04, green: 0.08, blue: 0.04)
+                .overlay {
+                    AsyncImage(url: URL(string: enchantedBgURL)) { phase in
+                        if let image = phase.image {
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: geo.size.width)
+                                .opacity(0.55)
+                        }
+                    }
+                    .allowsHitTesting(false)
+                }
+                .overlay {
+                    LinearGradient(
+                        stops: [
+                            .init(color: Color(red: 0.04, green: 0.08, blue: 0.04).opacity(0.0), location: 0),
+                            .init(color: Color(red: 0.04, green: 0.08, blue: 0.04).opacity(0.3), location: 0.15),
+                            .init(color: Color.clear, location: 0.35),
+                            .init(color: Color.clear, location: 0.7),
+                            .init(color: Color(red: 0.03, green: 0.06, blue: 0.03).opacity(0.5), location: 1.0)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .allowsHitTesting(false)
+                }
+                .overlay(alignment: .top) {
+                    RadialGradient(
+                        colors: [
+                            Color(red: 1.0, green: 0.95, blue: 0.7).opacity(glowPhase ? 0.12 : 0.06),
+                            Color.clear
+                        ],
+                        center: .center,
+                        startRadius: 20,
+                        endRadius: 200
+                    )
+                    .frame(height: 350)
+                    .allowsHitTesting(false)
+                }
+                .frame(width: geo.size.width, height: geo.size.height)
+        }
     }
 
-    // MARK: - Node with Trees on Sides
+    // MARK: - Level Count Badge
 
-    private func nodeWithTrees(level: Level, index: Int, isUnlocked: Bool, isCompleted: Bool, isCracked: Bool, isCurrent: Bool) -> some View {
+    private var levelCountBadge: some View {
+        let total = 43
+        let done = progressService.completedLevelCount
+
+        return Text("\(done)/\(total)")
+            .font(.system(.caption, design: .rounded, weight: .bold).monospacedDigit())
+            .foregroundStyle(.white.opacity(0.9))
+            .padding(.horizontal, 10)
+            .padding(.vertical, 5)
+            .background(
+                Capsule()
+                    .fill(Pico.deepForestGreen.opacity(0.7))
+                    .overlay(
+                        Capsule()
+                            .strokeBorder(Pico.leafGreen.opacity(0.4), lineWidth: 1)
+                    )
+            )
+    }
+
+    // MARK: - Path Header
+
+    private var pathHeader: some View {
+        VStack(spacing: 12) {
+            AsyncImage(url: URL(string: Pico.kingfisherMascotURL)) { phase in
+                if let image = phase.image {
+                    image.resizable().aspectRatio(contentMode: .fit)
+                } else {
+                    Image(systemName: "bird.fill")
+                        .font(.system(size: 28))
+                        .foregroundStyle(Pico.leafGreen)
+                }
+            }
+            .frame(width: 64, height: 64)
+            .shadow(color: Pico.amber.opacity(0.4), radius: 12, y: 2)
+
+            Text("Your Journey")
+                .font(.system(.title2, design: .serif, weight: .bold))
+                .tracking(-0.3)
+                .foregroundStyle(.white.opacity(0.9))
+
+            let total = 43
+            let done = progressService.completedLevelCount
+            pathProgressBar(done: done, total: total)
+        }
+        .padding(.top, 50)
+    }
+
+    private func pathProgressBar(done: Int, total: Int) -> some View {
+        let progress = Double(done) / Double(total)
+
+        return HStack(spacing: 10) {
+            ZStack(alignment: .leading) {
+                Capsule()
+                    .fill(Color.white.opacity(0.1))
+                    .frame(width: 120, height: 5)
+
+                Capsule()
+                    .fill(
+                        LinearGradient(
+                            colors: [Pico.leafGreen, Pico.amber],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .frame(width: max(5, 120 * progress), height: 5)
+                    .shadow(color: Pico.leafGreen.opacity(0.5), radius: 4)
+            }
+
+            Text("\(done) of \(total) levels")
+                .font(.system(.caption2, design: .rounded, weight: .medium))
+                .foregroundStyle(.white.opacity(0.5))
+        }
+    }
+
+    // MARK: - Path Node
+
+    private func pathNode(level: Level, index: Int, isUnlocked: Bool, isCompleted: Bool, isCracked: Bool, isCurrent: Bool) -> some View {
         let xOffset = naturalCurveOffset(for: index)
-        let baseSize: CGFloat = level.isSpecial ? 68 : 58
-        let nodeSize: CGFloat = isCurrent ? baseSize * 1.15 : baseSize
+        let baseSize: CGFloat = level.isSpecial ? 64 : 54
+        let nodeSize: CGFloat = isCurrent ? baseSize * 1.2 : baseSize
 
         return Button {
             if isUnlocked {
@@ -138,137 +258,186 @@ struct ForestPathView: View {
                 HapticService.selection()
             }
         } label: {
-            HStack(spacing: 0) {
-                sideLeaves(index: index, side: .left)
-                    .frame(width: 44)
-                    .opacity(isCompleted ? 1.0 : (isUnlocked ? 0.3 : 0.12))
-
-                VStack(spacing: 0) {
-                    ZStack {
-                        if isCurrent {
-                            Circle()
-                                .fill(
-                                    RadialGradient(
-                                        colors: [
-                                            Pico.amber.opacity(pulseActive ? 0.25 : 0.1),
-                                            Pico.leafGreen.opacity(pulseActive ? 0.1 : 0.03),
-                                            Color.clear
-                                        ],
-                                        center: .center,
-                                        startRadius: nodeSize * 0.3,
-                                        endRadius: nodeSize * 0.9
-                                    )
-                                )
-                                .frame(width: nodeSize * 1.8, height: nodeSize * 1.8)
-                                .allowsHitTesting(false)
-                        }
-
+            VStack(spacing: 0) {
+                ZStack {
+                    if isCurrent {
                         Circle()
-                            .fill(nodeFill(isUnlocked: isUnlocked, isCompleted: isCompleted, isCurrent: isCurrent))
-                            .frame(width: nodeSize, height: nodeSize)
-                            .overlay {
-                                Circle()
-                                    .strokeBorder(
-                                        nodeBorder(isCompleted: isCompleted, isCurrent: isCurrent, isUnlocked: isUnlocked),
-                                        lineWidth: isCurrent ? 2.5 : (isCompleted ? 2 : 1)
-                                    )
-                            }
-                            .shadow(
-                                color: isCurrent ? Pico.amber.opacity(0.3) : (isCompleted ? Pico.leafGreen.opacity(0.2) : Pico.deepForestGreen.opacity(0.15)),
-                                radius: isCurrent ? 12 : (isCompleted ? 6 : 3),
-                                y: isCurrent ? 0 : 2
+                            .fill(
+                                RadialGradient(
+                                    colors: [
+                                        Pico.amber.opacity(pulseActive ? 0.35 : 0.15),
+                                        Pico.leafGreen.opacity(pulseActive ? 0.12 : 0.04),
+                                        Color.clear
+                                    ],
+                                    center: .center,
+                                    startRadius: nodeSize * 0.25,
+                                    endRadius: nodeSize * 1.1
+                                )
                             )
-
-                        if isCracked && !isCompleted {
-                            Image(systemName: "exclamationmark.triangle.fill")
-                                .font(.system(size: 10))
-                                .foregroundStyle(.red)
-                                .offset(x: nodeSize / 2 - 2, y: -nodeSize / 2 + 2)
-                        }
-
-                        nodeContent(level: level, isUnlocked: isUnlocked, isCompleted: isCompleted, isCurrent: isCurrent)
+                            .frame(width: nodeSize * 2.2, height: nodeSize * 2.2)
+                            .allowsHitTesting(false)
                     }
 
-                    nodeLabel(level: level, isUnlocked: isUnlocked, isCompleted: isCompleted, isCurrent: isCurrent)
-                        .padding(.top, 8)
-                }
-                .offset(x: xOffset)
+                    if isCompleted {
+                        completedNode(level: level, size: nodeSize)
+                    } else if isCurrent {
+                        currentNode(level: level, size: nodeSize)
+                    } else if isUnlocked {
+                        unlockedNode(level: level, size: nodeSize)
+                    } else {
+                        lockedNode(size: nodeSize)
+                    }
 
-                sideLeaves(index: index, side: .right)
-                    .frame(width: 44)
-                    .opacity(isCompleted ? 1.0 : (isUnlocked ? 0.3 : 0.12))
+                    if isCracked && !isCompleted {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .font(.system(size: 10))
+                            .foregroundStyle(.red)
+                            .offset(x: nodeSize / 2 - 4, y: -nodeSize / 2 + 4)
+                    }
+                }
+
+                nodeLabel(level: level, isUnlocked: isUnlocked, isCompleted: isCompleted, isCurrent: isCurrent)
+                    .padding(.top, 8)
             }
+            .offset(x: xOffset)
         }
         .buttonStyle(.plain)
-        .padding(.vertical, 8)
-        .opacity(!isUnlocked ? 0.5 : 1)
+        .padding(.vertical, 10)
+        .opacity(!isUnlocked ? 0.6 : 1)
     }
 
-    private enum TreeSide { case left, right }
-
-    private func sideLeaves(index: Int, side: TreeSide) -> some View {
-        let baseRotation = side == .left ? -25.0 : 25.0
-        let variation = Double(index % 4) * 8
-        let leafCount = (index % 3) + 1
-
-        return VStack(spacing: 2) {
-            ForEach(0..<leafCount, id: \.self) { leafIdx in
-                let leafRotation = baseRotation + variation + Double(leafIdx) * (side == .left ? 12 : -12)
-                let leafSize: CGFloat = leafIdx == 0 ? 14 : (leafIdx == 1 ? 11 : 9)
-                let leafOpacity = 1.0 - Double(leafIdx) * 0.2
-                let leafSymbol = leafIdx % 2 == 0 ? "leaf.fill" : "leaf"
-
-                Image(systemName: leafSymbol)
-                    .font(.system(size: leafSize))
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [
-                                Pico.leafGreen.opacity(leafOpacity),
-                                Pico.tropicalGreen.opacity(leafOpacity * 0.8)
-                            ],
-                            startPoint: .bottom,
-                            endPoint: .top
-                        )
+    private func completedNode(level: Level, size: CGFloat) -> some View {
+        ZStack {
+            Circle()
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 0.2, green: 0.5, blue: 0.25),
+                            Color(red: 0.14, green: 0.38, blue: 0.18)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
                     )
-                    .rotationEffect(.degrees(leafRotation))
-                    .scaleEffect(x: side == .left ? 1 : -1, y: 1)
-            }
+                )
+                .frame(width: size, height: size)
+                .overlay {
+                    Circle()
+                        .strokeBorder(
+                            LinearGradient(
+                                colors: [Pico.leafGreen.opacity(0.6), Pico.tropicalGreen.opacity(0.3)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 2
+                        )
+                }
+                .shadow(color: Pico.leafGreen.opacity(0.3), radius: 8, y: 2)
+
+            Image(systemName: "checkmark")
+                .font(.system(size: size * 0.3, weight: .bold))
+                .foregroundStyle(.white.opacity(0.9))
         }
-        .offset(
-            x: side == .left ? -4 : 4,
-            y: CGFloat(index % 2 == 0 ? -6 : 2)
-        )
     }
 
-    private func nodeContent(level: Level, isUnlocked: Bool, isCompleted: Bool, isCurrent: Bool) -> some View {
-        Group {
-            if isCompleted {
-                Image(systemName: "checkmark")
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundStyle(Pico.leafGreen)
-            } else if !isUnlocked {
-                Image(systemName: "lock.fill")
-                    .font(.system(size: 13))
-                    .foregroundStyle(Pico.deepForestGreen.opacity(0.3))
-            } else {
-                Text("\(level.level)")
-                    .font(.system(.title3, design: .rounded, weight: .heavy))
-                    .foregroundStyle(isCurrent ? Pico.amber : Pico.plaster)
-                    .shadow(color: .black.opacity(0.2), radius: 1, y: 1)
-            }
+    private func currentNode(level: Level, size: CGFloat) -> some View {
+        ZStack {
+            Circle()
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 0.18, green: 0.42, blue: 0.22),
+                            Color(red: 0.12, green: 0.32, blue: 0.14)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .frame(width: size, height: size)
+                .overlay {
+                    Circle()
+                        .strokeBorder(
+                            AngularGradient(
+                                colors: [Pico.amber, Pico.gold, Pico.amber],
+                                center: .center
+                            ),
+                            lineWidth: 3
+                        )
+                }
+                .shadow(color: Pico.amber.opacity(0.5), radius: 14, y: 0)
+
+            Text("\(level.level)")
+                .font(.system(size: size * 0.35, weight: .heavy, design: .rounded))
+                .foregroundStyle(Pico.amber)
+                .shadow(color: .black.opacity(0.3), radius: 2, y: 1)
         }
     }
+
+    private func unlockedNode(level: Level, size: CGFloat) -> some View {
+        ZStack {
+            Circle()
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 0.2, green: 0.36, blue: 0.22),
+                            Color(red: 0.14, green: 0.28, blue: 0.16)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .frame(width: size, height: size)
+                .overlay {
+                    Circle()
+                        .strokeBorder(Pico.leafGreen.opacity(0.3), lineWidth: 1.5)
+                }
+                .shadow(color: Pico.deepForestGreen.opacity(0.4), radius: 6, y: 3)
+
+            Text("\(level.level)")
+                .font(.system(size: size * 0.32, weight: .bold, design: .rounded))
+                .foregroundStyle(.white.opacity(0.85))
+                .shadow(color: .black.opacity(0.2), radius: 1, y: 1)
+        }
+    }
+
+    private func lockedNode(size: CGFloat) -> some View {
+        ZStack {
+            Circle()
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 0.28, green: 0.32, blue: 0.26),
+                            Color(red: 0.2, green: 0.24, blue: 0.18)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .frame(width: size, height: size)
+                .overlay {
+                    Circle()
+                        .strokeBorder(Color.white.opacity(0.06), lineWidth: 1)
+                }
+                .shadow(color: .black.opacity(0.3), radius: 4, y: 2)
+
+            Image(systemName: "lock.fill")
+                .font(.system(size: size * 0.24))
+                .foregroundStyle(.white.opacity(0.25))
+        }
+    }
+
+    // MARK: - Node Label
 
     private func nodeLabel(level: Level, isUnlocked: Bool, isCompleted: Bool, isCurrent: Bool) -> some View {
         VStack(spacing: 3) {
             Text(level.tense)
-                .font(.system(size: 13, weight: .bold, design: .rounded))
+                .font(.system(size: 12, weight: .semibold, design: .rounded))
                 .foregroundStyle(
                     isUnlocked
-                        ? (isCurrent ? Pico.amber : Pico.darkText)
-                        : Pico.darkText.opacity(0.35)
+                        ? (isCurrent ? Pico.amber : .white.opacity(0.8))
+                        : .white.opacity(0.3)
                 )
                 .lineLimit(1)
+                .shadow(color: .black.opacity(0.5), radius: 2, y: 1)
 
             if level.isSpecial {
                 HStack(spacing: 3) {
@@ -278,6 +447,7 @@ struct ForestPathView: View {
                         .font(.system(size: 9, weight: .bold, design: .rounded))
                 }
                 .foregroundStyle(Pico.amber)
+                .shadow(color: .black.opacity(0.3), radius: 2, y: 1)
             }
 
             if isCompleted {
@@ -290,6 +460,7 @@ struct ForestPathView: View {
                             .font(.system(size: 9, weight: .bold, design: .rounded).monospacedDigit())
                     }
                     .foregroundStyle(Pico.amber)
+                    .shadow(color: .black.opacity(0.3), radius: 2, y: 1)
                 }
             }
         }
@@ -321,156 +492,32 @@ struct ForestPathView: View {
             if fromCompleted {
                 context.stroke(
                     path,
-                    with: .color(Pico.leafGreen.opacity(0.5)),
-                    style: StrokeStyle(lineWidth: 2.5, lineCap: .round)
+                    with: .color(Pico.leafGreen.opacity(0.15)),
+                    style: StrokeStyle(lineWidth: 8, lineCap: .round)
                 )
                 context.stroke(
                     path,
-                    with: .color(Pico.tropicalGreen.opacity(0.15)),
-                    style: StrokeStyle(lineWidth: 6, lineCap: .round)
+                    with: .color(Pico.leafGreen.opacity(0.4)),
+                    style: StrokeStyle(lineWidth: 2.5, lineCap: .round)
                 )
             } else {
                 context.stroke(
                     path,
-                    with: .color(Pico.deepForestGreen.opacity(0.2)),
-                    style: StrokeStyle(lineWidth: 1.5, lineCap: .round, dash: [5, 7])
+                    with: .color(Color.white.opacity(0.08)),
+                    style: StrokeStyle(lineWidth: 6, lineCap: .round)
+                )
+                context.stroke(
+                    path,
+                    with: .color(Color.white.opacity(0.12)),
+                    style: StrokeStyle(lineWidth: 1.5, lineCap: .round, dash: [5, 8])
                 )
             }
         }
-        .frame(height: 20)
+        .frame(height: 22)
         .allowsHitTesting(false)
     }
 
-    // MARK: - Node Fills
-
-    private func nodeFill(isUnlocked: Bool, isCompleted: Bool, isCurrent: Bool) -> some ShapeStyle {
-        if !isUnlocked {
-            return AnyShapeStyle(
-                LinearGradient(
-                    colors: [
-                        Color(red: 0.55, green: 0.60, blue: 0.52),
-                        Color(red: 0.48, green: 0.54, blue: 0.46)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-        }
-        if isCompleted {
-            return AnyShapeStyle(
-                LinearGradient(
-                    colors: [
-                        Color(red: 0.22, green: 0.44, blue: 0.26),
-                        Color(red: 0.16, green: 0.36, blue: 0.20)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-        }
-        if isCurrent {
-            return AnyShapeStyle(
-                LinearGradient(
-                    colors: [
-                        Color(red: 0.20, green: 0.38, blue: 0.22),
-                        Color(red: 0.14, green: 0.30, blue: 0.16)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-        }
-        return AnyShapeStyle(
-            LinearGradient(
-                colors: [
-                    Color(red: 0.24, green: 0.38, blue: 0.24),
-                    Color(red: 0.18, green: 0.32, blue: 0.18)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        )
-    }
-
-    private func nodeBorder(isCompleted: Bool, isCurrent: Bool, isUnlocked: Bool) -> some ShapeStyle {
-        if isCurrent {
-            return AnyShapeStyle(
-                AngularGradient(
-                    colors: [Pico.amber, Pico.gold, Pico.amber],
-                    center: .center
-                )
-            )
-        }
-        if isCompleted {
-            return AnyShapeStyle(
-                LinearGradient(
-                    colors: [Pico.leafGreen.opacity(0.7), Pico.tropicalGreen.opacity(0.5)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-        }
-        if isUnlocked {
-            return AnyShapeStyle(Pico.deepForestGreen.opacity(0.25))
-        }
-        return AnyShapeStyle(Pico.deepForestGreen.opacity(0.1))
-    }
-
     // MARK: - Header & Footer
-
-    private var pathHeader: some View {
-        VStack(spacing: 14) {
-            AsyncImage(url: URL(string: Pico.kingfisherMascotURL)) { phase in
-                if let image = phase.image {
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                } else {
-                    Image(systemName: "bird.fill")
-                        .font(.title2)
-                        .foregroundStyle(Pico.deepForestGreen)
-                }
-            }
-            .frame(width: 56, height: 56)
-            .shadow(color: Pico.deepForestGreen.opacity(0.15), radius: 6, y: 3)
-
-            Text("Your Journey")
-                .font(.system(.title3, design: .serif, weight: .bold))
-                .tracking(-0.3)
-                .foregroundStyle(Pico.darkText)
-
-            let total = 43
-            let done = progressService.completedLevelCount
-            progressBar(done: done, total: total)
-        }
-    }
-
-    private func progressBar(done: Int, total: Int) -> some View {
-        HStack(spacing: 10) {
-            let progress = Double(done) / Double(total)
-
-            ZStack(alignment: .leading) {
-                Capsule()
-                    .fill(Pico.deepForestGreen.opacity(0.12))
-                    .frame(width: 120, height: 5)
-
-                Capsule()
-                    .fill(
-                        LinearGradient(
-                            colors: [Pico.leafGreen, Pico.tropicalGreen],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
-                    .frame(width: max(5, 120 * progress), height: 5)
-                    .shadow(color: Pico.leafGreen.opacity(0.4), radius: 4)
-            }
-
-            Text("\(done)/\(total)")
-                .font(.system(.caption2, design: .rounded, weight: .semibold).monospacedDigit())
-                .foregroundStyle(Pico.darkTextSecondary)
-        }
-    }
 
     private var summitFooter: some View {
         VStack(spacing: 14) {
@@ -478,28 +525,30 @@ struct ForestPathView: View {
                 Circle()
                     .fill(
                         RadialGradient(
-                            colors: [Pico.amber.opacity(0.2), Color.clear],
+                            colors: [Pico.amber.opacity(0.25), Color.clear],
                             center: .center,
                             startRadius: 5,
-                            endRadius: 45
+                            endRadius: 50
                         )
                     )
-                    .frame(width: 90, height: 90)
+                    .frame(width: 100, height: 100)
 
                 Image(systemName: "flag.fill")
-                    .font(.system(size: 28))
+                    .font(.system(size: 32))
                     .foregroundStyle(Pico.amber)
-                    .shadow(color: Pico.amber.opacity(0.5), radius: 6)
+                    .shadow(color: Pico.amber.opacity(0.6), radius: 8)
             }
 
             Text("The Summit")
-                .font(.system(.headline, design: .serif, weight: .bold))
-                .foregroundStyle(Pico.darkText)
+                .font(.system(.title3, design: .serif, weight: .bold))
+                .foregroundStyle(.white.opacity(0.9))
+                .shadow(color: .black.opacity(0.4), radius: 2, y: 1)
 
             Text("Master all 43 levels to conquer Portuguese verbs")
                 .font(.system(.caption, design: .rounded))
-                .foregroundStyle(Pico.darkTextSecondary)
+                .foregroundStyle(.white.opacity(0.45))
                 .multilineTextAlignment(.center)
+                .shadow(color: .black.opacity(0.3), radius: 2, y: 1)
         }
     }
 
@@ -510,7 +559,7 @@ struct ForestPathView: View {
             Rectangle()
                 .fill(
                     LinearGradient(
-                        colors: [Color.clear, Pico.deepForestGreen.opacity(0.2), Color.clear],
+                        colors: [Color.clear, Color.white.opacity(0.1), Color.clear],
                         startPoint: .leading,
                         endPoint: .trailing
                     )
@@ -525,20 +574,23 @@ struct ForestPathView: View {
                     .textCase(.uppercase)
                     .tracking(1)
             }
-            .foregroundStyle(Pico.darkText)
+            .foregroundStyle(.white.opacity(0.8))
             .padding(.horizontal, 14)
             .padding(.vertical, 6)
-            .background(Pico.pistachioLight.opacity(0.9), in: Capsule())
-            .overlay(
+            .background(
                 Capsule()
-                    .strokeBorder(Pico.deepForestGreen.opacity(0.15), lineWidth: 0.5)
+                    .fill(Pico.deepForestGreen.opacity(0.6))
+                    .overlay(
+                        Capsule()
+                            .strokeBorder(Pico.leafGreen.opacity(0.2), lineWidth: 0.5)
+                    )
             )
-            .shadow(color: Pico.deepForestGreen.opacity(0.06), radius: 4, y: 2)
+            .shadow(color: .black.opacity(0.2), radius: 4, y: 2)
 
             Rectangle()
                 .fill(
                     LinearGradient(
-                        colors: [Color.clear, Pico.deepForestGreen.opacity(0.2), Color.clear],
+                        colors: [Color.clear, Color.white.opacity(0.1), Color.clear],
                         startPoint: .leading,
                         endPoint: .trailing
                     )

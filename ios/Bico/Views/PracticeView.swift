@@ -6,12 +6,13 @@ struct PracticeView: View {
     @Environment(ProgressService.self) private var progressService
     @Environment(EngagementService.self) private var engagementService
     @Environment(SpeechService.self) private var speechService
+    @Environment(\.colorScheme) private var colorScheme
     @State private var viewModel: PracticeViewModel?
 
     var body: some View {
         NavigationStack {
             ZStack {
-                Pico.plaster.ignoresSafeArea()
+                Pico.adaptivePlaster(colorScheme).ignoresSafeArea()
 
                 if let vm = viewModel {
                     if !vm.isSessionActive {

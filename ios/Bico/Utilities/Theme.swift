@@ -1,10 +1,36 @@
 import SwiftUI
 
+nonisolated enum AppearanceMode: String, CaseIterable, Sendable {
+    case system = "System"
+    case light = "Light"
+    case dark = "Dark"
+
+    var colorScheme: ColorScheme? {
+        switch self {
+        case .system: nil
+        case .light: .light
+        case .dark: .dark
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .system: "circle.lefthalf.filled"
+        case .light: "sun.max.fill"
+        case .dark: "moon.fill"
+        }
+    }
+}
+
 enum Pico {
 
     // MARK: - Background
     static let plaster = Color(red: 0.957, green: 0.953, blue: 0.937) // #F4F3EF
     static let cardSurface = Color(red: 0.918, green: 0.906, blue: 0.878) // #EAE7E0
+
+    // MARK: - Dark Mode variants
+    static let plasterDark = Color(red: 0.11, green: 0.11, blue: 0.12)
+    static let cardSurfaceDark = Color(red: 0.16, green: 0.16, blue: 0.18)
 
     // MARK: - Primary Palette
     static let deepForestGreen = Color(red: 0.169, green: 0.298, blue: 0.231) // #2B4C3B
@@ -56,8 +82,10 @@ enum Pico {
     static let pistachioLight = Color(red: 0.88, green: 0.92, blue: 0.84)
 
     // MARK: - High Contrast Text
-    static let darkText = Color(red: 0.10, green: 0.10, blue: 0.10) // near-black for maximum contrast
+    static let darkText = Color(red: 0.10, green: 0.10, blue: 0.10)
     static let darkTextSecondary = Color(red: 0.25, green: 0.25, blue: 0.25)
+    static let lightText = Color(red: 0.94, green: 0.94, blue: 0.94)
+    static let lightTextSecondary = Color(red: 0.72, green: 0.72, blue: 0.72)
 
     // MARK: - Mascot & Backgrounds
     static let forestBgURL = "https://r2-pub.rork.com/generated-images/32865e6b-8ef7-4997-bd5f-6234f3e2ea07.png"
@@ -66,6 +94,7 @@ enum Pico {
     static let monsteraHeaderURL = "https://r2-pub.rork.com/generated-images/23dd5673-14a7-4123-b34e-22fd5a777693.png"
     static let leafVeinTextureURL = "https://r2-pub.rork.com/generated-images/b7759818-d0cc-48d7-abfd-19f6d17dac3f.png"
     static let stoneArchTextureURL = "https://r2-pub.rork.com/generated-images/c8879eec-1612-4197-9656-91b31e12291a.png"
+    static var enchantedForestPathURL = ""
 
     // MARK: - Spacing
     static let spacingS: CGFloat = 8
@@ -142,15 +171,22 @@ typealias Theme = Pico
 // MARK: - View Modifiers
 
 struct PicoCard: ViewModifier {
+    @Environment(\.colorScheme) private var colorScheme
+
     func body(content: Content) -> some View {
         content
             .padding(Pico.spacingM)
             .background(
                 RoundedRectangle(cornerRadius: Pico.cardRadius, style: .continuous)
-                    .fill(Pico.cardSurface)
+                    .fill(colorScheme == .dark ? Pico.cardSurfaceDark : Pico.cardSurface)
                     .overlay(
                         RoundedRectangle(cornerRadius: Pico.cardRadius, style: .continuous)
-                            .strokeBorder(Pico.cardLightStroke, lineWidth: 1)
+                            .strokeBorder(
+                                colorScheme == .dark
+                                    ? AnyShapeStyle(Color.white.opacity(0.08))
+                                    : AnyShapeStyle(Pico.cardLightStroke),
+                                lineWidth: 1
+                            )
                     )
             )
     }
@@ -164,12 +200,15 @@ struct PremiumCard: ViewModifier {
             .padding(Pico.spacingM)
             .background(
                 RoundedRectangle(cornerRadius: Pico.cardRadius, style: .continuous)
-                    .fill(colorScheme == .dark
-                          ? Color(.secondarySystemBackground)
-                          : Pico.cardSurface)
+                    .fill(colorScheme == .dark ? Pico.cardSurfaceDark : Pico.cardSurface)
                     .overlay(
                         RoundedRectangle(cornerRadius: Pico.cardRadius, style: .continuous)
-                            .strokeBorder(Pico.cardLightStroke, lineWidth: 1)
+                            .strokeBorder(
+                                colorScheme == .dark
+                                    ? AnyShapeStyle(Color.white.opacity(0.08))
+                                    : AnyShapeStyle(Pico.cardLightStroke),
+                                lineWidth: 1
+                            )
                     )
             )
     }
@@ -184,6 +223,15 @@ struct GlowButton: ViewModifier {
     }
 }
 
+struct AdaptiveBackground: ViewModifier {
+    @Environment(\.colorScheme) private var colorScheme
+
+    func body(content: Content) -> some View {
+        content
+            .background((colorScheme == .dark ? Pico.plasterDark : Pico.plaster).ignoresSafeArea())
+    }
+}
+
 extension View {
     func picoCard() -> some View {
         modifier(PicoCard())
@@ -195,5 +243,27 @@ extension View {
 
     func glowButton(color: Color = Pico.terracotta) -> some View {
         modifier(GlowButton(color: color))
+    }
+
+    func adaptiveBackground() -> some View {
+        modifier(AdaptiveBackground())
+    }
+}
+
+extension Pico {
+    static func adaptiveText(_ colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? lightText : darkText
+    }
+
+    static func adaptiveTextSecondary(_ colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? lightTextSecondary : darkTextSecondary
+    }
+
+    static func adaptivePlaster(_ colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? plasterDark : plaster
+    }
+
+    static func adaptiveCard(_ colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? cardSurfaceDark : cardSurface
     }
 }

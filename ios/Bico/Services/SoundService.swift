@@ -3,20 +3,27 @@ import AVFoundation
 @Observable
 @MainActor
 class SoundService {
-    private var correctPlayer: AVAudioPlayer?
-    private var incorrectPlayer: AVAudioPlayer?
+    private var audioSession: AVAudioSession { AVAudioSession.sharedInstance() }
+
+    init() {
+        configureAudioSession()
+    }
 
     func playCorrect() {
         HapticService.success()
-        playSystemSound(id: 1025)
+        AudioServicesPlaySystemSound(1025)
     }
 
     func playIncorrect() {
         HapticService.error()
-        playSystemSound(id: 1053)
+        AudioServicesPlaySystemSound(1053)
     }
 
-    private func playSystemSound(id: SystemSoundID) {
-        AudioServicesPlaySystemSound(id)
+    private func configureAudioSession() {
+        do {
+            try audioSession.setCategory(.ambient, mode: .default, options: .mixWithOthers)
+            try audioSession.setActive(true)
+        } catch {
+        }
     }
 }

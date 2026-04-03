@@ -4,6 +4,7 @@ struct ConversationPracticeView: View {
     let dialect: Dialect
     @Environment(VerbDataService.self) private var verbDataService
     @Environment(SpeechService.self) private var speechService
+    @Environment(\.colorScheme) private var colorScheme
     @Environment(EngagementService.self) private var engagementService
     @State private var currentScenario: Int = 0
     @State private var userAnswer: String = ""
@@ -22,7 +23,7 @@ struct ConversationPracticeView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Pico.plaster.ignoresSafeArea()
+                Pico.adaptivePlaster(colorScheme).ignoresSafeArea()
 
                 if isComplete {
                     completionView

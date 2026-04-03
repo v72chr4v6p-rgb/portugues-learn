@@ -73,7 +73,7 @@ struct VerbExplorerView: View {
                 }
                 .padding(.bottom, 120)
             }
-            .background(Pico.plaster.ignoresSafeArea())
+            .adaptiveBackground()
             .searchable(text: $searchText, prompt: "Search verbs...")
             .navigationTitle("Verb Explorer")
             .toolbar {
@@ -317,7 +317,7 @@ struct VerbDetailSheet: View {
                 .padding(20)
                 .padding(.bottom, 40)
             }
-            .background(Pico.plaster.ignoresSafeArea())
+            .adaptiveBackground()
             .navigationTitle(verb.infinitive)
             .navigationBarTitleDisplayMode(.inline)
         }

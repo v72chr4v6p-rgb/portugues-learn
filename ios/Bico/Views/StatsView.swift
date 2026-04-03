@@ -15,7 +15,7 @@ struct StatsView: View {
                 .padding(.horizontal, Pico.spacingXL)
                 .padding(.vertical, Pico.spacingL)
             }
-            .background(Pico.plaster.ignoresSafeArea())
+            .adaptiveBackground()
             .navigationTitle("Statistics")
             .toolbar {
                 ToolbarItem(placement: .principal) {

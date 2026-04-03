@@ -24,7 +24,7 @@ struct CultureView: View {
                 .padding(.vertical, Pico.spacingL)
                 .padding(.bottom, 80)
             }
-            .background(Pico.plaster.ignoresSafeArea())
+            .adaptiveBackground()
             .navigationTitle("Cultura")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

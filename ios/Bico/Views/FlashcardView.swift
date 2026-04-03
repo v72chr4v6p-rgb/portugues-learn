@@ -5,12 +5,13 @@ struct FlashcardView: View {
     @Environment(VerbDataService.self) private var verbDataService
     @Environment(ProgressService.self) private var progressService
     @Environment(SpeechService.self) private var speechService
+    @Environment(\.colorScheme) private var colorScheme
     @State private var viewModel: FlashcardViewModel?
 
     var body: some View {
         NavigationStack {
             ZStack {
-                Pico.plaster.ignoresSafeArea()
+                Pico.adaptivePlaster(colorScheme).ignoresSafeArea()
 
                 if let vm = viewModel {
                     if vm.isComplete {

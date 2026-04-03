@@ -3,14 +3,21 @@ import SwiftUI
 struct SettingsView: View {
     @Environment(SpeechService.self) private var speechService
     @Environment(EngagementService.self) private var engagementService
+    @Environment(\.colorScheme) private var colorScheme
     @AppStorage("selectedDialect") private var dialectRaw: String = ""
+    @AppStorage("appearanceMode") private var appearanceModeRaw: String = AppearanceMode.system.rawValue
     @State private var selectedSpeed: SpeechService.Speed = .normal
     @State private var showResetAlert: Bool = false
+
+    private var appearanceMode: AppearanceMode {
+        AppearanceMode(rawValue: appearanceModeRaw) ?? .system
+    }
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: Pico.spacingL) {
+                    appearanceSection
                     audioSection
                     dailyGoalSection
                     dialectSection
@@ -20,14 +27,14 @@ struct SettingsView: View {
                 .padding(.horizontal, Pico.spacingXL)
                 .padding(.vertical, Pico.spacingL)
             }
-            .background(Pico.plaster.ignoresSafeArea())
+            .adaptiveBackground()
             .navigationTitle("Settings")
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("Settings")
                         .font(.system(.headline, design: .serif, weight: .bold))
                         .tracking(-0.3)
-                        .foregroundStyle(Pico.deepForestGreen)
+                        .foregroundStyle(Pico.adaptiveText(colorScheme))
                 }
             }
             .alert("Reset Progress?", isPresented: $showResetAlert) {
@@ -41,6 +48,83 @@ struct SettingsView: View {
         }
     }
 
+    private var appearanceSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            sectionHeader("Appearance", icon: "paintbrush.fill")
+
+            HStack(spacing: 10) {
+                ForEach(AppearanceMode.allCases, id: \.rawValue) { mode in
+                    Button {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                            appearanceModeRaw = mode.rawValue
+                        }
+                        HapticService.selection()
+                    } label: {
+                        VStack(spacing: 8) {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                    .fill(previewFill(for: mode))
+                                    .frame(height: 52)
+                                    .overlay {
+                                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                            .strokeBorder(
+                                                appearanceMode == mode
+                                                    ? Pico.leafGreen
+                                                    : Color.clear,
+                                                lineWidth: 2
+                                            )
+                                    }
+
+                                Image(systemName: mode.icon)
+                                    .font(.title3)
+                                    .foregroundStyle(previewIconColor(for: mode))
+                            }
+
+                            Text(mode.rawValue)
+                                .font(.system(.caption, design: .rounded, weight: .semibold))
+                                .foregroundStyle(
+                                    appearanceMode == mode
+                                        ? Pico.adaptiveText(colorScheme)
+                                        : Pico.adaptiveTextSecondary(colorScheme)
+                                )
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .picoCard()
+        }
+    }
+
+    private func previewFill(for mode: AppearanceMode) -> some ShapeStyle {
+        switch mode {
+        case .light:
+            return AnyShapeStyle(Pico.plaster)
+        case .dark:
+            return AnyShapeStyle(Color(red: 0.12, green: 0.12, blue: 0.14))
+        case .system:
+            return AnyShapeStyle(
+                LinearGradient(
+                    stops: [
+                        .init(color: Pico.plaster, location: 0.5),
+                        .init(color: Color(red: 0.12, green: 0.12, blue: 0.14), location: 0.5)
+                    ],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+            )
+        }
+    }
+
+    private func previewIconColor(for mode: AppearanceMode) -> Color {
+        switch mode {
+        case .light: Pico.amber
+        case .dark: Pico.leafGreen
+        case .system: Pico.deepForestGreen
+        }
+    }
+
     private var audioSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             sectionHeader("Audio", icon: "speaker.wave.2.fill")
@@ -48,7 +132,7 @@ struct SettingsView: View {
             HStack {
                 Text("Speech Speed")
                     .font(.system(.subheadline, design: .rounded, weight: .medium))
-                    .foregroundStyle(Pico.darkText)
+                    .foregroundStyle(Pico.adaptiveText(colorScheme))
                 Spacer()
                 Picker("Speed", selection: $selectedSpeed) {
                     ForEach(SpeechService.Speed.allCases, id: \.self) { speed in
@@ -80,10 +164,10 @@ struct SettingsView: View {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(label)
                                     .font(.system(.subheadline, design: .rounded, weight: .semibold))
-                                    .foregroundStyle(Pico.darkText)
+                                    .foregroundStyle(Pico.adaptiveText(colorScheme))
                                 Text("\(goal) XP per day")
                                     .font(.system(.caption, design: .rounded))
-                                    .foregroundStyle(Pico.darkTextSecondary)
+                                    .foregroundStyle(Pico.adaptiveTextSecondary(colorScheme))
                             }
                             Spacer()
                             if engagement.dailyXPGoal == goal {
@@ -112,10 +196,10 @@ struct SettingsView: View {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(dialect.displayName)
                                 .font(.system(.subheadline, design: .rounded, weight: .semibold))
-                                .foregroundStyle(Pico.darkText)
+                                .foregroundStyle(Pico.adaptiveText(colorScheme))
                             Text(dialect.subtitle)
                                 .font(.system(.caption, design: .rounded))
-                                .foregroundStyle(Pico.darkTextSecondary)
+                                .foregroundStyle(Pico.adaptiveTextSecondary(colorScheme))
                         }
                         Spacer()
                     }
@@ -168,10 +252,10 @@ struct SettingsView: View {
                 .foregroundStyle(color)
             Text(value)
                 .font(.system(.title3, design: .rounded, weight: .bold))
-                .foregroundStyle(Pico.darkText)
+                .foregroundStyle(Pico.adaptiveText(colorScheme))
             Text(label)
                 .font(.system(.caption, design: .rounded))
-                .foregroundStyle(Pico.darkTextSecondary)
+                .foregroundStyle(Pico.adaptiveTextSecondary(colorScheme))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .picoCard()
@@ -206,11 +290,11 @@ struct SettingsView: View {
         HStack(spacing: 8) {
             Image(systemName: icon)
                 .font(.caption)
-                .foregroundStyle(Pico.darkTextSecondary)
+                .foregroundStyle(Pico.adaptiveTextSecondary(colorScheme))
             Text(title)
                 .font(.system(.subheadline, design: .serif, weight: .bold))
                 .tracking(-0.3)
-                .foregroundStyle(Pico.darkText)
+                .foregroundStyle(Pico.adaptiveText(colorScheme))
         }
     }
 }

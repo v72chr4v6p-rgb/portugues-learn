@@ -4,6 +4,7 @@ struct QuizView: View {
     @State private var viewModel: QuizViewModel
     @Environment(ProgressService.self) private var progressService
     @Environment(EngagementService.self) private var engagementService
+    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dismiss) private var dismiss
 
     init(level: Level, dialect: Dialect, pronouns: Set<Pronoun>, gameMode: GameMode, useTimer: Bool) {
@@ -18,7 +19,7 @@ struct QuizView: View {
 
     var body: some View {
         ZStack {
-            Pico.plaster.ignoresSafeArea()
+            Pico.adaptivePlaster(colorScheme).ignoresSafeArea()
 
             if viewModel.isComplete {
                 completionView

@@ -32,7 +32,7 @@ struct LevelDetailView: View {
             }
             .padding(.vertical, 20)
         }
-        .background(Pico.plaster.ignoresSafeArea())
+        .adaptiveBackground()
         .navigationTitle("Level \(level.level)")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(item: Binding(

@@ -6,6 +6,7 @@ struct QuickReviewView: View {
     @Environment(ProgressService.self) private var progressService
     @Environment(EngagementService.self) private var engagementService
     @Environment(SpeechService.self) private var speechService
+    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dismiss) private var dismiss
     @State private var items: [(Verb, Pronoun, String)] = []
     @State private var currentIndex: Int = 0
@@ -17,7 +18,7 @@ struct QuickReviewView: View {
 
     var body: some View {
         ZStack {
-            Pico.plaster.ignoresSafeArea()
+            Pico.adaptivePlaster(colorScheme).ignoresSafeArea()
 
             if isComplete {
                 completionView
